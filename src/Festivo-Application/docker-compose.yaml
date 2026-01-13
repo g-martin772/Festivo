@@ -4,48 +4,80 @@
     build:
       context: .
       dockerfile: Festivo.ApiGateway/Dockerfile
+    ports:
+      - "5101:8080"
+    environment:
+    - ASPNETCORE_ENVIRONMENT=Development
 
   festivo.ticketservice:
     image: festivo.ticketservice
     build:
       context: .
       dockerfile: Festivo.TicketService/Dockerfile
+    ports:
+      - "5102:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
   festivo.accesscontrolservice:
     image: festivo.accesscontrolservice
     build:
       context: .
       dockerfile: Festivo.AccessControlService/Dockerfile
+    ports:
+      - "5103:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
   festivo.scheduleservice:
     image: festivo.scheduleservice
     build:
       context: .
       dockerfile: Festivo.ScheduleService/Dockerfile
+    ports:
+      - "5104:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
   festivo.crowdmonitorservice:
     image: festivo.crowdmonitorservice
     build:
       context: .
       dockerfile: Festivo.CrowdMonitorService/Dockerfile
+    ports:
+      - "5105:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
   festivo.notificationservice:
     image: festivo.notificationservice
     build:
       context: .
       dockerfile: Festivo.NotificationService/Dockerfile
+    ports:
+      - "5106:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
   festivo.orchestratorservice:
     image: festivo.orchestratorservice
     build:
       context: .
       dockerfile: Festivo.OrchestratorService/Dockerfile
+    ports:
+      - "5107:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
   festivo.callbackservice:
     image: festivo.callbackservice
     build:
       context: .
       dockerfile: Festivo.CallbackService/Dockerfile
+    ports:
+      - "5108:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
   festivo.rabbitmq:
     image: rabbitmq:3-management
