@@ -4,7 +4,7 @@ This short file will explain how to run this application.
 
 First of all, you will need to clone the GitHub Repository with the command:
 ```
-git clone 
+git clone https://github.com/nwinkler-edu/festivo-distributed-system-festivo-team-07.git
 ```
 
 Next, you need to move to the /src/Festivo-Application/ folder because this is where the docker-compose.yaml is located:

@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.ApiGateway", "Festi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker-Compose", "Docker-Compose", "{932799BD-08DC-427E-B8CE-F372BB0A9353}"
 	ProjectSection(SolutionItems) = preProject
-		compose.yaml = compose.yaml
+		docker-compose.yaml = docker-compose.yaml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.TicketService", "Festivo.TicketService\Festivo.TicketService.csproj", "{829C14F7-4CCB-4FBA-AFF5-381D677B022B}"
