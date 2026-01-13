@@ -1,18 +1,19 @@
-# Festivo Projekt
+# Festivo-Project
 
-*by Festivo-Team-07, a.k.a Leonhard Neuhold*
+*by Festivo-Team-07, a.k.a Leonhard Neuhold & Gabriel Martin*
 
-**Schulprojekt für das Fach SYTD an der HTL Krems**
+**Project for the school subject SYTD at the HTL Krems**
 
-## Übersicht
+## Overview
 
-
-## Technologien
-
-
-## Anregungen
+This project concludes a year and half of learning how to build applications with interconnected services in the subject SYTD. There are many technologies that 
+will be used but there is a primary focus, which is *Reliable Messaging*.
 
 
-## Entwicklung
+## Technologies
 
 
+## Development
+
+For developmental purposes, there will be a description of how to build and run the project. For all of that, there is a docker-compose.yaml, which will serve as a 
+primary tool for running the application during development. For further information, see [How to run](docs/RUN.md).
