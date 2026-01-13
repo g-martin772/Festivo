@@ -1,0 +1,93 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.ApiGateway", "Festivo.ApiGateway\Festivo.ApiGateway.csproj", "{F0F8B041-64C4-4D52-9AF2-382706C53C03}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker-Compose", "Docker-Compose", "{932799BD-08DC-427E-B8CE-F372BB0A9353}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.TicketService", "Festivo.TicketService\Festivo.TicketService.csproj", "{829C14F7-4CCB-4FBA-AFF5-381D677B022B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.AccessControlService", "Festivo.AccessControlService\Festivo.AccessControlService.csproj", "{906CEC4D-F2C7-49C3-856F-A786528F982F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.ScheduleService", "Festivo.ScheduleService\Festivo.ScheduleService.csproj", "{B8051249-DCE8-4278-9BAF-E7EFA67085D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.CrowdMonitorService", "Festivo.CrowdMonitorService\Festivo.CrowdMonitorService.csproj", "{9BEA3B97-596D-479B-B35C-1AB6AB1CADCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.NotificationService", "Festivo.NotificationService\Festivo.NotificationService.csproj", "{5ECFDD18-F5EB-402B-919A-CE6F81E5CBDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.OrchestratorService", "Festivo.OrchestratorService\Festivo.OrchestratorService.csproj", "{F42B4153-3CB3-47DE-85CE-A4FA70BD725E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.CallbackService", "Festivo.CallbackService\Festivo.CallbackService.csproj", "{35EA0978-B2C5-4024-8EA8-E11BA2083421}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.WebApp", "Festivo.WebApp\Festivo.WebApp.csproj", "{5F6D6EC2-8135-4764-9B81-10D0DBC64FD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festivo.Shared", "Festivo.Shared\Festivo.Shared.csproj", "{7950D9C1-C1C0-4D8A-83C7-000F75CF6123}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{81ED6430-800C-4ABB-AC35-D986ABDA46A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frontend", "Frontend", "{A417DED4-71EA-43CD-B722-2A213D65060E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{23ACB45D-0BF6-4238-BF23-23DE40AC2384}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0F8B041-64C4-4D52-9AF2-382706C53C03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0F8B041-64C4-4D52-9AF2-382706C53C03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0F8B041-64C4-4D52-9AF2-382706C53C03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0F8B041-64C4-4D52-9AF2-382706C53C03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{829C14F7-4CCB-4FBA-AFF5-381D677B022B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{829C14F7-4CCB-4FBA-AFF5-381D677B022B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{829C14F7-4CCB-4FBA-AFF5-381D677B022B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{829C14F7-4CCB-4FBA-AFF5-381D677B022B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{906CEC4D-F2C7-49C3-856F-A786528F982F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{906CEC4D-F2C7-49C3-856F-A786528F982F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{906CEC4D-F2C7-49C3-856F-A786528F982F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{906CEC4D-F2C7-49C3-856F-A786528F982F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8051249-DCE8-4278-9BAF-E7EFA67085D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8051249-DCE8-4278-9BAF-E7EFA67085D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8051249-DCE8-4278-9BAF-E7EFA67085D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8051249-DCE8-4278-9BAF-E7EFA67085D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BEA3B97-596D-479B-B35C-1AB6AB1CADCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BEA3B97-596D-479B-B35C-1AB6AB1CADCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BEA3B97-596D-479B-B35C-1AB6AB1CADCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BEA3B97-596D-479B-B35C-1AB6AB1CADCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ECFDD18-F5EB-402B-919A-CE6F81E5CBDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ECFDD18-F5EB-402B-919A-CE6F81E5CBDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ECFDD18-F5EB-402B-919A-CE6F81E5CBDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ECFDD18-F5EB-402B-919A-CE6F81E5CBDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F42B4153-3CB3-47DE-85CE-A4FA70BD725E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F42B4153-3CB3-47DE-85CE-A4FA70BD725E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F42B4153-3CB3-47DE-85CE-A4FA70BD725E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F42B4153-3CB3-47DE-85CE-A4FA70BD725E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35EA0978-B2C5-4024-8EA8-E11BA2083421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35EA0978-B2C5-4024-8EA8-E11BA2083421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35EA0978-B2C5-4024-8EA8-E11BA2083421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35EA0978-B2C5-4024-8EA8-E11BA2083421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F6D6EC2-8135-4764-9B81-10D0DBC64FD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F6D6EC2-8135-4764-9B81-10D0DBC64FD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F6D6EC2-8135-4764-9B81-10D0DBC64FD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F6D6EC2-8135-4764-9B81-10D0DBC64FD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7950D9C1-C1C0-4D8A-83C7-000F75CF6123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7950D9C1-C1C0-4D8A-83C7-000F75CF6123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7950D9C1-C1C0-4D8A-83C7-000F75CF6123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7950D9C1-C1C0-4D8A-83C7-000F75CF6123}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{906CEC4D-F2C7-49C3-856F-A786528F982F} = {81ED6430-800C-4ABB-AC35-D986ABDA46A5}
+		{F0F8B041-64C4-4D52-9AF2-382706C53C03} = {81ED6430-800C-4ABB-AC35-D986ABDA46A5}
+		{9BEA3B97-596D-479B-B35C-1AB6AB1CADCB} = {81ED6430-800C-4ABB-AC35-D986ABDA46A5}
+		{35EA0978-B2C5-4024-8EA8-E11BA2083421} = {81ED6430-800C-4ABB-AC35-D986ABDA46A5}
+		{5ECFDD18-F5EB-402B-919A-CE6F81E5CBDC} = {81ED6430-800C-4ABB-AC35-D986ABDA46A5}
+		{F42B4153-3CB3-47DE-85CE-A4FA70BD725E} = {81ED6430-800C-4ABB-AC35-D986ABDA46A5}
+		{B8051249-DCE8-4278-9BAF-E7EFA67085D0} = {81ED6430-800C-4ABB-AC35-D986ABDA46A5}
+		{829C14F7-4CCB-4FBA-AFF5-381D677B022B} = {81ED6430-800C-4ABB-AC35-D986ABDA46A5}
+		{7950D9C1-C1C0-4D8A-83C7-000F75CF6123} = {23ACB45D-0BF6-4238-BF23-23DE40AC2384}
+		{5F6D6EC2-8135-4764-9B81-10D0DBC64FD3} = {A417DED4-71EA-43CD-B722-2A213D65060E}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,57 @@
+﻿services:
+  festivo.apigateway:
+    image: festivo.apigateway
+    build:
+      context: .
+      dockerfile: Festivo.ApiGateway/Dockerfile
+
+  festivo.ticketservice:
+    image: festivo.ticketservice
+    build:
+      context: .
+      dockerfile: Festivo.TicketService/Dockerfile
+
+  festivo.accesscontrolservice:
+    image: festivo.accesscontrolservice
+    build:
+      context: .
+      dockerfile: Festivo.AccessControlService/Dockerfile
+
+  festivo.scheduleservice:
+    image: festivo.scheduleservice
+    build:
+      context: .
+      dockerfile: Festivo.ScheduleService/Dockerfile
+
+  festivo.crowdmonitorservice:
+    image: festivo.crowdmonitorservice
+    build:
+      context: .
+      dockerfile: Festivo.CrowdMonitorService/Dockerfile
+
+  festivo.notificationservice:
+    image: festivo.notificationservice
+    build:
+      context: .
+      dockerfile: Festivo.NotificationService/Dockerfile
+
+  festivo.orchestratorservice:
+    image: festivo.orchestratorservice
+    build:
+      context: .
+      dockerfile: Festivo.OrchestratorService/Dockerfile
+
+  festivo.callbackservice:
+    image: festivo.callbackservice
+    build:
+      context: .
+      dockerfile: Festivo.CallbackService/Dockerfile
+
+  festivo.rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
