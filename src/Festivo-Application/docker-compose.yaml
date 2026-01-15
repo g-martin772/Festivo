@@ -102,6 +102,19 @@
     depends_on:
       festivo.rabbitmq:
         condition: service_healthy
+        
+  festivo.loggingservice:
+    image: festivo.loggingservice
+    build:
+      context: .
+      dockerfile: Festivo.LoggingService/Dockerfile
+    ports:
+      - "5109:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      festivo.rabbitmq:
+        condition: service_healthy
 
   festivo.rabbitmq:
     image: rabbitmq:3-management
@@ -115,4 +128,4 @@
       test: "rabbitmq-diagnostics -q ping"
       interval: 5s
       timeout: 30s
-      retries: 5
+      retries: 5  

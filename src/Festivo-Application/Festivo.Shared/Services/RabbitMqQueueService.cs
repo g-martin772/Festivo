@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
@@ -15,25 +14,29 @@ public class RabbitMqQueueService : IQueueService
     private const int RetryDelayMs = 2000;
     
     public RabbitMqQueueService(
-        ConnectionFactory factory, 
+        IConnectionFactory factory, 
         ILogger<RabbitMqQueueService> logger)
     {
         _logger = logger;
         ConnectAsync(factory);
     }
-
-
-    public string ReadFromQueue(string queueName)
+    
+    public async Task WriteToQueue(string exchangeName, string routingKey, string message)
     {
-        throw new NotImplementedException();
+        var body = Encoding.UTF8.GetBytes(message);
+        if (_channel != null)
+            await _channel.BasicPublishAsync(
+                exchange: exchangeName,
+                routingKey: routingKey,
+                body: body
+            );
+        else
+        {
+            _logger.LogError("Failed to publish message to RabbitMQ: {EMessage}", message);
+        }
     }
 
-    public void WriteToQueue(string queueName, string message)
-    {
-        throw new NotImplementedException();
-    }
-
-    private async void ConnectAsync(ConnectionFactory factory)
+    private async void ConnectAsync(IConnectionFactory factory)
     {
         try
         {
@@ -44,7 +47,6 @@ public class RabbitMqQueueService : IQueueService
                     var connection = await factory.CreateConnectionAsync();
                     _channel = await connection.CreateChannelAsync();
                     _logger.LogInformation("Connected to RabbitMQ broker.");
-                    await SendTestMessage();
                     break;
                 }
                 catch(BrokerUnreachableException)
@@ -59,29 +61,5 @@ public class RabbitMqQueueService : IQueueService
         {
             _logger.LogError("Failed to connect to RabbitMQ: {EMessage}", e.Message);
         }
-    }
-
-    private async Task SendTestMessage()
-    {
-        await _channel?.QueueDeclareAsync(
-            queue: "test", 
-            durable: false, 
-            exclusive: false, 
-            autoDelete: false,
-            arguments: null
-        )!;
-
-        var data = JsonSerializer.Serialize(new
-        {
-            purpose = "Test: RabbitMQ Connection",
-            message = "Connected to RabbitMQ successfully."
-        });
-        
-        var body = Encoding.UTF8.GetBytes(data);
-        await _channel.BasicPublishAsync(
-            exchange: string.Empty, 
-            routingKey: "test", 
-            body: body
-        );
     }
 }

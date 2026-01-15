@@ -1,5 +1,4 @@
-using Festivo.CallbackService.Services;
-using Festivo.Shared.Services;
+using Festivo.LoggingService.Services;
 using RabbitMQ.Client;
 
 #region Builder
@@ -14,7 +13,6 @@ builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory()
     UserName = "user",
     Password = "password",
 });
-builder.Services.AddSingleton<IQueueService, RabbitMqQueueService>();
 
 // Logger
 builder.Logging
@@ -22,15 +20,13 @@ builder.Logging
     .AddConsole();
 
 // Background Service
-builder.Services.AddHostedService<QueueBackgroundService>();
+builder.Services.AddHostedService<ConsumeErrorMessagesBgService>();
 
 var app = builder.Build();
 
 #endregion
 
 #region App
-
-_ = app.Services.GetRequiredService<IQueueService>();
 
 app.MapGet("/health", () => Results.Ok());
 

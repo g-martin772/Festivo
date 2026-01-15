@@ -1,4 +1,5 @@
 using Festivo.Shared.Services;
+using Festivo.TicketService.Services;
 using RabbitMQ.Client;
 
 #region Builder
@@ -6,7 +7,7 @@ using RabbitMQ.Client;
 var builder = WebApplication.CreateBuilder(args);
 
 // RabbitMQ Services
-builder.Services.AddSingleton(_ => new ConnectionFactory()
+builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory()
 {
     HostName = builder.Configuration["RabbitMQ"] ?? "localhost",
     Port = 5672,
@@ -19,6 +20,9 @@ builder.Services.AddSingleton<IQueueService, RabbitMqQueueService>();
 builder.Logging
     .ClearProviders()
     .AddConsole();
+
+// Background Service
+builder.Services.AddHostedService<QueueBackgroundService>();
 
 var app = builder.Build();
 
