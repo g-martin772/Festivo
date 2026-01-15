@@ -14,7 +14,9 @@ public class RabbitMqQueueService : IQueueService
     private const int MaxRetries = 5;
     private const int RetryDelayMs = 2000;
     
-    public RabbitMqQueueService(ConnectionFactory factory, ILogger logger)
+    public RabbitMqQueueService(
+        ConnectionFactory factory, 
+        ILogger<RabbitMqQueueService> logger)
     {
         _logger = logger;
         ConnectAsync(factory);

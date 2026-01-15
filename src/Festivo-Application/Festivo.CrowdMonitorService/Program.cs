@@ -13,16 +13,20 @@ builder.Services.AddSingleton(_ => new ConnectionFactory()
     UserName = "user",
     Password = "password",
 });
-builder.Services.AddScoped<IQueueService, RabbitMqQueueService>();
+builder.Services.AddSingleton<IQueueService, RabbitMqQueueService>();
 
 // Logger
-builder.Services.AddLogging();
+builder.Logging
+    .ClearProviders()
+    .AddConsole();
 
 var app = builder.Build();
 
 #endregion
 
 #region App
+
+_ = app.Services.GetRequiredService<IQueueService>();
 
 app.MapGet("/health", () => Results.Ok());
 
