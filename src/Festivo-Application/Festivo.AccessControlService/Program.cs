@@ -14,7 +14,6 @@ builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory()
     UserName = "user",
     Password = "password",
 });
-builder.Services.AddSingleton<IQueueService, RabbitMqQueueService>();
 
 // Logger
 builder.Logging
@@ -29,8 +28,6 @@ var app = builder.Build();
 #endregion
 
 #region App
-
-_ = app.Services.GetRequiredService<IQueueService>();
 
 app.MapGet("/health", () => Results.Ok());
 

@@ -1,4 +1,5 @@
 using System.Text;
+using CloudNative.CloudEvents;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
@@ -21,12 +22,27 @@ public class RabbitMqQueueService : IQueueService
         ConnectAsync(factory);
     }
     
-    public async Task WriteToQueue(string exchangeName, string routingKey, string message)
+    public async Task WriteToQueue(
+        string routingKey, string message, 
+        string serviceName, string eventName)
     {
-        var body = Encoding.UTF8.GetBytes(message);
+        var evt = new CloudEvent
+        {
+            Id = Guid.NewGuid().ToString(),
+            Source = new Uri($"service://{serviceName}"),
+            Time = DateTimeOffset.UtcNow,
+            Type = eventName,
+            DataContentType = "application/json",
+            Data = new
+            {
+                message
+            }
+        };
+        
+        var body = Encoding.UTF8.GetBytes(evt.Data.ToString() ?? string.Empty);
         if (_channel != null)
             await _channel.BasicPublishAsync(
-                exchange: exchangeName,
+                exchange: "messages",
                 routingKey: routingKey,
                 body: body
             );
@@ -60,6 +76,31 @@ public class RabbitMqQueueService : IQueueService
         catch (Exception e)
         {
             _logger.LogError("Failed to connect to RabbitMQ: {EMessage}", e.Message);
+        }
+    }
+    
+    private async void DeclareBasicExchange()
+    {
+        try
+        {
+            if (_channel != null)
+            {
+                await _channel.ExchangeDeclareAsync(
+                    exchange: "messages",
+                    type: ExchangeType.Topic,
+                    durable: true,
+                    autoDelete: false
+                );
+                _logger.LogInformation("Declared basic exchange 'messages'.");
+            }
+            else
+            {
+                _logger.LogError("Cannot declare exchange: RabbitMQ channel is not established.");
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Failed to declare exchange: {EMessage}", e.Message);
         }
     }
 }

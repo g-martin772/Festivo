@@ -14,7 +14,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="CloudNative.CloudEvents" Version="2.8.0" />
       <PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Festivo.Shared\Festivo.Shared.csproj" />
     </ItemGroup>
 
 </Project>

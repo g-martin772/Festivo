@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Festivo.Shared.Helper;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
@@ -15,62 +16,40 @@ public class ConsumeErrorMessagesBgService(
     private const int RetryDelayMs = 2000;
     
     private const string QueueName = "dead-letter-queue";
-    private const string ExchangeName = "message-exchange";
-    
+    private const string ExchangeName = "messages";
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await ConnectAsync(factory: connectionFactory);
 
         if (_channel == null)
             return;
-        
-        var queue = await _channel.QueueDeclareAsync(
-            queue: QueueName,
+
+        await RabbitMqHelper.DeclareQueue(
+            queueName: QueueName,
+            channel: _channel,
             durable: true,
             exclusive: false,
             autoDelete: false,
-            cancellationToken: stoppingToken);
+            cancellationToken: stoppingToken
+        );
 
-        await _channel.QueueBindAsync(
-            queue: QueueName,
-            exchange: ExchangeName,
+        await RabbitMqHelper.BindQueue(
+            queueName: QueueName,
+            channel: _channel,
+            exchangeName: ExchangeName,
             routingKey: "#.error",
-            cancellationToken: stoppingToken);
-        
-        var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.ReceivedAsync += async (model, ea) =>
-        {
-            try
-            {
-                var body = ea.Body.ToArray();
-                var message = System.Text.Encoding.UTF8.GetString(body);
-                var encodedJson = JsonSerializer.Deserialize<string>(message);
-                logger.LogInformation("Received message: {Message}", encodedJson);
-                await _channel.BasicAckAsync(
-                    deliveryTag: ea.DeliveryTag,
-                    multiple: false,
-                    cancellationToken: stoppingToken);
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, e.Message);
-                await _channel.BasicNackAsync(
-                    deliveryTag: ea.DeliveryTag,
-                    multiple: false,
-                    requeue: false,
-                    cancellationToken: stoppingToken);
-            }   
-        };
-        
-        await _channel.BasicConsumeAsync(
-            queue: queue.QueueName,
-            autoAck: false,
-            consumer: consumer,
-            cancellationToken: stoppingToken);
-        
-        await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);
+            cancellationToken: stoppingToken
+        );
+
+        await RabbitMqHelper.AddConsumer(
+            queueName: QueueName,
+            channel: _channel,
+            logger: logger,
+            cancellationToken: stoppingToken
+        );
     }
-    
+
     private async Task ConnectAsync(IConnectionFactory factory)
     {
         try
