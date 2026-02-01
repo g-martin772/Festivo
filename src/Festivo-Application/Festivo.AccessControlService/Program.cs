@@ -30,6 +30,13 @@ var app = builder.Build();
 
 app.MapGet("/health", () => Results.Ok());
 
+// Dummy endpoints for MS5
+app.MapGet("/api/access", () => Results.Ok(new { message = "Get all access control entries", service = "AccessControlService" }));
+app.MapGet("/api/access/{id}", (string id) => Results.Ok(new { message = $"Get access control entry {id}", service = "AccessControlService" }));
+app.MapPost("/api/access/verify", () => Results.Ok(new { message = "Verify access", service = "AccessControlService" }));
+app.MapPost("/api/access/grant", () => Results.Ok(new { message = "Grant access", service = "AccessControlService" }));
+app.MapPost("/api/access/revoke", () => Results.Ok(new { message = "Revoke access", service = "AccessControlService" }));
+
 app.Run();
 
 #endregion

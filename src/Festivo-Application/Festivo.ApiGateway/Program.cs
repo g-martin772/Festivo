@@ -14,6 +14,10 @@ builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory()
     Password = "password",
 });
 
+// YARP Reverse Proxy
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
 // Logger
 builder.Logging
     .ClearProviders()
@@ -29,6 +33,9 @@ var app = builder.Build();
 #region App
 
 app.MapGet("/health", () => Results.Ok());
+
+// Map YARP reverse proxy
+app.MapReverseProxy();
 
 app.Run();
 

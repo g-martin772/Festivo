@@ -30,6 +30,13 @@ var app = builder.Build();
 
 app.MapGet("/health", () => Results.Ok());
 
+// Dummy REST endpoints for MS5
+app.MapGet("/api/notifications", () => Results.Ok(new { message = "Get all notifications", service = "NotificationService" }));
+app.MapGet("/api/notifications/{id}", (string id) => Results.Ok(new { message = $"Get notification {id}", service = "NotificationService" }));
+app.MapGet("/api/notifications/user/{userId}", (string userId) => Results.Ok(new { message = $"Get notifications for user {userId}", service = "NotificationService" }));
+app.MapPost("/api/notifications/send", () => Results.Ok(new { message = "Send notification", service = "NotificationService" }));
+app.MapPut("/api/notifications/{id}/read", (string id) => Results.Ok(new { message = $"Mark notification {id} as read", service = "NotificationService" }));
+
 app.Run();
 
 #endregion

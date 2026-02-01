@@ -30,6 +30,13 @@ var app = builder.Build();
 
 app.MapGet("/health", () => Results.Ok());
 
+// Dummy endpoints for MS5
+app.MapGet("/api/tickets", () => Results.Ok(new { message = "Get all tickets", service = "TicketService" }));
+app.MapGet("/api/tickets/{id}", (string id) => Results.Ok(new { message = $"Get ticket {id}", service = "TicketService" }));
+app.MapPost("/api/tickets", () => Results.Ok(new { message = "Create ticket", service = "TicketService" }));
+app.MapPut("/api/tickets/{id}", (string id) => Results.Ok(new { message = $"Update ticket {id}", service = "TicketService" }));
+app.MapDelete("/api/tickets/{id}", (string id) => Results.Ok(new { message = $"Delete ticket {id}", service = "TicketService" }));
+
 app.Run();
 
 #endregion
