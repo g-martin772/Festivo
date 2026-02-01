@@ -1,5 +1,4 @@
 using Festivo.AccessControlService.Services;
-using Festivo.Shared.Services;
 using RabbitMQ.Client;
 
 #region Builder

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Festivo.Shared.Helper;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
@@ -14,9 +15,8 @@ public class QueueBackgroundService(
     private const int MaxRetries = 5;
     private const int RetryDelayMs = 2000;
     
-    private const string ExchangeName = "message-exchange";
-    private const string QueueName = "callback-queue";
-    private const string RoutingKey = "3-callback.normal";
+    private const string ExchangeName = "messages";
+    private static readonly List<string> Queues = [];
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -25,65 +25,47 @@ public class QueueBackgroundService(
         if (_channel == null)
             return;
         
-        await _channel.ExchangeDeclareAsync(
-            exchange: ExchangeName,
-            type: ExchangeType.Topic,
-            durable: true,
-            cancellationToken: stoppingToken);
-        
-        var queue = await _channel.QueueDeclareAsync(
-            queue: QueueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: new Dictionary<string, object?>()
-            {
-                { "x-dead-letter-exchange", ExchangeName },
-                { "x-dead-letter-routing-key", "3-callback.error" }
-            },
-            cancellationToken: stoppingToken);
-
-        await _channel.QueueBindAsync(
-            queue: QueueName,
-            exchange: ExchangeName,
-            routingKey: RoutingKey,
-            cancellationToken: stoppingToken);
-        
-        var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.ReceivedAsync += async (model, ea) =>
+        foreach (var name in Queues)
         {
-            try
-            {
-                var body = ea.Body.ToArray();
-                var message = System.Text.Encoding.UTF8.GetString(body);
-                var encodedJson = JsonSerializer.Deserialize<string>(message);
-                logger.LogInformation("Received message: {Message}", encodedJson);
-                await _channel.BasicAckAsync(
-                    deliveryTag: ea.DeliveryTag,
-                    multiple: false,
-                    cancellationToken: stoppingToken);
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, e.Message);
-                await _channel.BasicNackAsync(
-                    deliveryTag: ea.DeliveryTag,
-                    multiple: false,
-                    requeue: false,
-                    cancellationToken: stoppingToken);
-            }   
-        };
-        
-        await _channel.BasicConsumeAsync(
-            queue: queue.QueueName,
-            autoAck: false,
-            consumer: consumer,
-            cancellationToken: stoppingToken);
+            await RabbitMqHelper.DeclareQueue(
+                channel: _channel, 
+                queueName: name, 
+                arguments: new Dictionary<string, object?>()
+                {
+                    { "x-dead-letter-exchange", ExchangeName },
+                    { "x-dead-letter-routing-key", "3-callback.error" }
+                },
+                cancellationToken: stoppingToken
+            );
+        }
 
-        await _channel.BasicPublishAsync(
-            exchange: ExchangeName,
-            routingKey: RoutingKey,
-            body: "{'message': 'test'}"u8.ToArray(),
+        foreach (var name in Queues)
+        {
+            await RabbitMqHelper.BindQueue(
+                channel: _channel,
+                queueName: name,
+                exchangeName: "messages",
+                routingKey: name,
+                cancellationToken: stoppingToken
+            );
+        }
+
+        foreach (var name in Queues)
+        {
+            await RabbitMqHelper.AddConsumer(
+                channel: _channel,
+                logger: logger,
+                queueName: name,
+                cancellationToken: stoppingToken
+            );
+        }
+        
+        await RabbitMqHelper.WriteToQueue(
+            channel: _channel, 
+            routingKey: "3-callback.ticket-purchased", 
+            message: "Test message", 
+            serviceName: "callback-service",
+            eventName: "ticket-purchased",
             cancellationToken: stoppingToken);
         
         await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);
