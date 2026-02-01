@@ -22,6 +22,14 @@ public class ConsumeErrorMessagesBgService(
 
         if (_channel == null)
             return;
+        
+        await RabbitMqHelper.DeclareExchange(
+            exchangeName: ExchangeName,
+            channel: _channel,
+            exchangeType: ExchangeType.Topic,
+            durable: true,
+            autoDelete: false
+        );
 
         await RabbitMqHelper.DeclareQueue(
             queueName: QueueName,
