@@ -23,6 +23,8 @@ public class QueueBackgroundService(
         if (_channel == null)
             return;
         
+        await RabbitMqHelper.DeclareExchange(channel: _channel, exchangeName: ExchangeName, ExchangeType.Topic);
+
         foreach (var name in Queues)
         {
             await RabbitMqHelper.DeclareQueue(
@@ -61,10 +63,10 @@ public class QueueBackgroundService(
         await RabbitMqHelper.WriteToQueue(
             channel: _channel, 
             logger: logger,
-            routingKey: "1-access-control.ticket-purchased", 
-            message: "Test message", 
-            serviceName: "access-control-service",
-            eventName: "ticket-purchased",
+            routingKey: "5-notification.schedule-item-created", 
+            message: new { ItemId = "item-001", StageId = "stage-main", StageName = "Main Stage", ArtistName = "The Rock Band", StartTime = DateTime.UtcNow.AddHours(2), EndTime = DateTime.UtcNow.AddHours(3), CreatedAt = DateTime.UtcNow }, 
+            serviceName: "schedule-service",
+            eventName: "com.festivo.schedule.item-created.v1",
             cancellationToken: stoppingToken);
         
         await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);

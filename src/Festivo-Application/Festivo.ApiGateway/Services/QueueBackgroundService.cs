@@ -23,6 +23,8 @@ public class QueueBackgroundService(
         if (_channel == null)
             return;
         
+        await RabbitMqHelper.DeclareExchange(channel: _channel, exchangeName: ExchangeName, ExchangeType.Topic);
+
         foreach (var name in Queues)
         {
             await RabbitMqHelper.DeclareQueue(

@@ -14,7 +14,10 @@ public class QueueBackgroundService(
     private const int RetryDelayMs = 2000;
     
     private const string ExchangeName = "messages";
-    private static readonly string[] Queues = [];
+    private static readonly string[] Queues = [
+        "4-crowd-monitor.entry-granted",
+        "4-crowd-monitor.exit-granted"
+    ];
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -23,6 +26,8 @@ public class QueueBackgroundService(
         if (_channel == null)
             return;
         
+        await RabbitMqHelper.DeclareExchange(channel: _channel, exchangeName: ExchangeName, ExchangeType.Topic);
+
         foreach (var name in Queues)
         {
             await RabbitMqHelper.DeclareQueue(
@@ -61,10 +66,10 @@ public class QueueBackgroundService(
         await RabbitMqHelper.WriteToQueue(
             channel: _channel, 
             logger: logger,
-            routingKey: "4-crowd-monitor.ticket-purchased", 
-            message: "Test message", 
+            routingKey: "5-notification.occupancy-updated", 
+            message: new { StageId = "stage-main", StageName = "Main Stage", CurrentOccupancy = 1250, MaxCapacity = 2000, OccupancyPercentage = 62.5, UpdatedAt = DateTime.UtcNow }, 
             serviceName: "crowd-monitor-service",
-            eventName: "ticket-purchased",
+            eventName: "com.festivo.crowd.occupancy-updated.v1",
             cancellationToken: stoppingToken);
         
         await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);

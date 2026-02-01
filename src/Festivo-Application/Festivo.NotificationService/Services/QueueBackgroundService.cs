@@ -14,7 +14,14 @@ public class QueueBackgroundService(
     private const int RetryDelayMs = 2000;
     
     private const string ExchangeName = "messages";
-    private static readonly string[] Queues = [];
+    private static readonly string[] Queues = [
+        "5-notification.ticket-purchased",
+        "5-notification.entry-granted",
+        "5-notification.entry-denied",
+        "5-notification.capacity-warning",
+        "5-notification.capacity-critical",
+        "5-notification.occupancy-updated"
+    ];
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -23,6 +30,8 @@ public class QueueBackgroundService(
         if (_channel == null)
             return;
         
+        await RabbitMqHelper.DeclareExchange(channel: _channel, exchangeName: ExchangeName, ExchangeType.Topic);
+
         foreach (var name in Queues)
         {
             await RabbitMqHelper.DeclareQueue(
@@ -57,15 +66,6 @@ public class QueueBackgroundService(
                 cancellationToken: stoppingToken
             );
         }
-        
-        await RabbitMqHelper.WriteToQueue(
-            channel: _channel, 
-            logger: logger,
-            routingKey: "1-access-control.ticket-purchased", 
-            message: "Test message", 
-            serviceName: "access-control-service",
-            eventName: "ticket-purchased",
-            cancellationToken: stoppingToken);
         
         await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);
     }

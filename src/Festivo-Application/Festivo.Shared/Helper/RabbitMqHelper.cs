@@ -1,6 +1,6 @@
-using System.Text;
 using System.Text.Json;
 using CloudNative.CloudEvents;
+using CloudNative.CloudEvents.SystemTextJson;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -65,14 +65,14 @@ public static class RabbitMqHelper
         bool autoAck = false, 
         CancellationToken cancellationToken = default)
     {
+        var formatter = new JsonEventFormatter();
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.ReceivedAsync += async (sender, eventArgs) =>
         {
             try
             {
                 var body = eventArgs.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                var encodedMessage = JsonSerializer.Deserialize<CloudEvent>(message);
+                var encodedMessage = formatter.DecodeStructuredModeMessage(body, contentType: null, extensionAttributes: null);
                 var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 var data = encodedMessage?.Data;
                 
@@ -115,12 +115,13 @@ public static class RabbitMqHelper
         var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         logger.LogInformation("[{Timestamp}] {EventName}: \"{Message}\"", timestamp, eventName, message);
         
-        var bodyData = JsonSerializer.Serialize(evt);
-        var body = Encoding.UTF8.GetBytes(bodyData);
+        var formatter = new JsonEventFormatter();
+        var bodyData = formatter.EncodeStructuredModeMessage(evt, out var contentType);
+        
         await channel.BasicPublishAsync(
             exchange: "messages",
             routingKey: routingKey,
-            body: body, 
+            body: bodyData.ToArray(), 
             cancellationToken: cancellationToken
         );
     }

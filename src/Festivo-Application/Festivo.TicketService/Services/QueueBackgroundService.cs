@@ -14,7 +14,9 @@ public class QueueBackgroundService(
     private const int RetryDelayMs = 2000;
     
     private const string ExchangeName = "messages";
-    private static readonly List<string> Queues = [];
+    private static readonly List<string> Queues = [
+        "8-ticket.refund-requested"
+    ];
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -23,6 +25,8 @@ public class QueueBackgroundService(
         if (_channel == null)
             return;
         
+        await RabbitMqHelper.DeclareExchange(channel: _channel, exchangeName: ExchangeName, ExchangeType.Topic);
+
         foreach (var name in Queues)
         {
             await RabbitMqHelper.DeclareQueue(
@@ -62,9 +66,9 @@ public class QueueBackgroundService(
             channel: _channel, 
             logger: logger,
             routingKey: "1-access-control.ticket-purchased", 
-            message: "Test message", 
-            serviceName: "access-control-service",
-            eventName: "ticket-purchased",
+            message: new { TicketId = "ticket-001", TicketCode = "TEST-001", TicketType = "Standard", Price = 99.99, PurchaseDate = DateTime.UtcNow, CustomerId = "customer-001" }, 
+            serviceName: "ticket-service",
+            eventName: "com.festivo.ticket.purchased.v1",
             cancellationToken: stoppingToken);
         
         await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);

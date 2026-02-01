@@ -18,13 +18,6 @@ public class QueueBackgroundService(
         "1-access-control.ticket-purchased",
         "1-access-control.ticket-refunded"
     ];
-    private static readonly List<string> RoutingKeys = [
-        "1-access-control.entry-requested",
-        "1-access-control.entry-granted",
-        "1-access-control.entry-denied",
-        "1-access-control.exit-granted",
-        "1-access-control.exit-denied",
-    ];
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -73,10 +66,10 @@ public class QueueBackgroundService(
         await RabbitMqHelper.WriteToQueue(
             channel: _channel,
             logger: logger,
-            routingKey: "1-access-control.ticket-purchased", 
-            message: "Test message", 
+            routingKey: "4-crowd-monitor.entry-granted", 
+            message: new { TicketId = "ticket-001", TicketCode = "TEST-001", GateId = "gate-main-1", EntryTime = DateTime.UtcNow, CustomerId = "customer-001" }, 
             serviceName: "access-control-service",
-            eventName: "ticket-purchased",
+            eventName: "com.festivo.access.entry-granted.v1",
             cancellationToken: stoppingToken);
         
         await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);

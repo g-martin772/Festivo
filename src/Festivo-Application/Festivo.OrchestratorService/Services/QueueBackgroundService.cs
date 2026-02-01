@@ -1,7 +1,5 @@
-using System.Text.Json;
 using Festivo.Shared.Helper;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 
 namespace Festivo.OrchestratorService.Services;
@@ -16,7 +14,10 @@ public class QueueBackgroundService(
     private const int RetryDelayMs = 2000;
     
     private const string ExchangeName = "messages";
-    private static readonly List<string> Queues = [];
+    private static readonly List<string> Queues = [
+        "6-orchestrator.entry-denied",
+        "6-orchestrator.capacity-critical"
+    ];
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -25,6 +26,8 @@ public class QueueBackgroundService(
         if (_channel == null)
             return;
         
+        await RabbitMqHelper.DeclareExchange(channel: _channel, exchangeName: ExchangeName, ExchangeType.Topic);
+
         foreach (var name in Queues)
         {
             await RabbitMqHelper.DeclareQueue(
@@ -63,10 +66,10 @@ public class QueueBackgroundService(
         await RabbitMqHelper.WriteToQueue(
             channel: _channel, 
             logger: logger,
-            routingKey: "1-access-control.ticket-purchased", 
-            message: "Test message", 
-            serviceName: "access-control-service",
-            eventName: "ticket-purchased",
+            routingKey: "8-ticket.refund-requested", 
+            message: new { TicketId = "ticket-001", TicketCode = "TEST-001", Reason = "Entry denied - system error", RefundAmount = 99.99, RequestedAt = DateTime.UtcNow }, 
+            serviceName: "orchestrator-service",
+            eventName: "com.festivo.saga.refund-requested.v1",
             cancellationToken: stoppingToken);
         
         await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);

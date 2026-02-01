@@ -25,6 +25,8 @@ public class QueueBackgroundService(
         if (_channel == null)
             return;
         
+        await RabbitMqHelper.DeclareExchange(channel: _channel, exchangeName: ExchangeName, ExchangeType.Topic);
+
         foreach (var name in Queues)
         {
             await RabbitMqHelper.DeclareQueue(
@@ -59,15 +61,6 @@ public class QueueBackgroundService(
                 cancellationToken: stoppingToken
             );
         }
-        
-        await RabbitMqHelper.WriteToQueue(
-            channel: _channel, 
-            logger: logger,
-            routingKey: "3-callback.ticket-purchased", 
-            message: "Test message", 
-            serviceName: "callback-service",
-            eventName: "ticket-purchased",
-            cancellationToken: stoppingToken);
         
         await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);
     }
