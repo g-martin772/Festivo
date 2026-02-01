@@ -21,3 +21,7 @@ primary tool for running the application during development. For further informa
 ## Queues
 
 For the specification of the queues, see [Contracts](docs/CONTRACTS.md)
+
+## API
+
+If you are interested in the exposed API endpoints, they are listed in [Endpoints](docs/API.md) 
