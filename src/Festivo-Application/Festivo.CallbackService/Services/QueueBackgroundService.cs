@@ -62,6 +62,7 @@ public class QueueBackgroundService(
         
         await RabbitMqHelper.WriteToQueue(
             channel: _channel, 
+            logger: logger,
             routingKey: "3-callback.ticket-purchased", 
             message: "Test message", 
             serviceName: "callback-service",

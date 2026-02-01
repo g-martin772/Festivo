@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using CloudNative.CloudEvents;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -71,9 +72,11 @@ public static class RabbitMqHelper
             {
                 var body = eventArgs.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
+                var encodedMessage = JsonSerializer.Deserialize<CloudEvent>(message);
                 var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                var data = encodedMessage?.Data;
                 
-                logger.LogInformation("[{Timestamp}] {QueueName}: \"{Message}\"", timestamp, queueName, message);
+                logger.LogInformation("[{Timestamp}] {QueueName}: \"{Data}\"", timestamp, queueName, data);
 
                 await channel.BasicAckAsync(eventArgs.DeliveryTag, multiple: false,
                     cancellationToken: cancellationToken);
@@ -94,8 +97,8 @@ public static class RabbitMqHelper
     }
     
     public static async Task WriteToQueue(
-        IChannel channel,
-        string routingKey, string message, 
+        IChannel channel, ILogger logger,
+        string routingKey, object message, 
         string serviceName, string eventName,
         CancellationToken cancellationToken = default)
     {
@@ -106,13 +109,14 @@ public static class RabbitMqHelper
             Time = DateTimeOffset.UtcNow,
             Type = eventName,
             DataContentType = "application/json",
-            Data = new
-            {
-                message
-            }
+            Data = JsonSerializer.Serialize(message)
         };
         
-        var body = Encoding.UTF8.GetBytes(evt.Data.ToString() ?? string.Empty);
+        var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        logger.LogInformation("[{Timestamp}] {EventName}: \"{Message}\"", timestamp, eventName, message);
+        
+        var bodyData = JsonSerializer.Serialize(evt);
+        var body = Encoding.UTF8.GetBytes(bodyData);
         await channel.BasicPublishAsync(
             exchange: "messages",
             routingKey: routingKey,

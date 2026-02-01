@@ -62,6 +62,7 @@ public class QueueBackgroundService(
         
         await RabbitMqHelper.WriteToQueue(
             channel: _channel, 
+            logger: logger,
             routingKey: "1-access-control.ticket-purchased", 
             message: "Test message", 
             serviceName: "access-control-service",
