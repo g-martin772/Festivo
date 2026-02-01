@@ -17,3 +17,7 @@ will be used but there is a primary focus, which is *Reliable Messaging*.
 
 For developmental purposes, there will be a description of how to build and run the project. For all of that, there is a docker-compose.yaml, which will serve as a 
 primary tool for running the application during development. For further information, see [How to run](docs/RUN.md).
+
+## Queues
+
+For the specification of the queues, see [Contracts](docs/CONTRACTS.md)
