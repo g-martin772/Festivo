@@ -1,0 +1,92 @@
+@page "/purchase-ticket"
+@using Festivo.WebApp.Models
+@using Festivo.WebApp.Services
+@inject TicketApiService TicketService
+
+<PageTitle>Purchase Ticket</PageTitle>
+
+<div class="container">
+    <h1>Purchase Ticket</h1>
+    
+    <div class="form-section">
+        <EditForm Model="@_purchaseRequest" OnValidSubmit="HandlePurchase">
+            <div class="form-group">
+                <label>Customer Name:</label>
+                <InputText @bind-Value="_purchaseRequest.CustomerName" class="form-control" placeholder="Enter your name" />
+            </div>
+            
+            <div class="form-group">
+                <label>Email:</label>
+                <InputText @bind-Value="_purchaseRequest.Email" class="form-control" placeholder="Enter your email" />
+            </div>
+            
+            <div class="form-group">
+                <label>Event ID:</label>
+                <InputText @bind-Value="_purchaseRequest.EventId" class="form-control" placeholder="Enter event ID" />
+            </div>
+            
+            <button type="submit" class="btn btn-primary" disabled="@_isLoading">
+                @if (_isLoading)
+                {
+                    <span>Processing...</span>
+                }
+                else
+                {
+                    <span>Purchase Ticket</span>
+                }
+            </button>
+        </EditForm>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-error">
+            <strong>Error:</strong> @_errorMessage
+        </div>
+    }
+    
+    @if (_purchaseResponse != null)
+    {
+        <div class="alert alert-success">
+            <h3>✓ Ticket Purchased Successfully!</h3>
+            <div class="result-details">
+                <p><strong>Ticket ID:</strong> <code>@_purchaseResponse.TicketId</code></p>
+                <p><strong>Ticket Code:</strong> <code class="highlight">@_purchaseResponse.TicketCode</code></p>
+                @if (!string.IsNullOrEmpty(_purchaseResponse.Message))
+                {
+                    <p><strong>Message:</strong> @_purchaseResponse.Message</p>
+                }
+            </div>
+            <p class="info-text">⚠️ Save this ticket code for entry/exit scanning!</p>
+        </div>
+    }
+</div>
+
+@code {
+    private PurchaseTicketRequest _purchaseRequest = new();
+    private PurchaseTicketResponse? _purchaseResponse;
+    private string? _errorMessage;
+    private bool _isLoading;
+
+    private async Task HandlePurchase()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        _purchaseResponse = null;
+        
+        var (success, response, error) = await TicketService.PurchaseTicketAsync(_purchaseRequest);
+        
+        if (success)
+        {
+            _purchaseResponse = response;
+            // Reset form
+            _purchaseRequest = new();
+        }
+        else
+        {
+            _errorMessage = error;
+        }
+        
+        _isLoading = false;
+    }
+}

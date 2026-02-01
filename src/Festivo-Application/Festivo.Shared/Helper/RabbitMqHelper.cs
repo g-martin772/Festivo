@@ -30,7 +30,7 @@ public static class RabbitMqHelper
         bool durable = true, 
         bool autoDelete = false, 
         bool exclusive = false,
-        Dictionary<string, object?> arguments = null,
+        Dictionary<string, object?> arguments = null!,
         CancellationToken cancellationToken = default)
     {
         await channel.QueueDeclareAsync(
@@ -38,7 +38,7 @@ public static class RabbitMqHelper
             durable: durable,
             autoDelete: autoDelete,
             exclusive: exclusive,
-            arguments: arguments!,
+            arguments: arguments,
             cancellationToken: cancellationToken
         );
     }
@@ -67,14 +67,14 @@ public static class RabbitMqHelper
     {
         var formatter = new JsonEventFormatter();
         var consumer = new AsyncEventingBasicConsumer(channel);
-        consumer.ReceivedAsync += async (sender, eventArgs) =>
+        consumer.ReceivedAsync += async (_, eventArgs) =>
         {
             try
             {
                 var body = eventArgs.Body.ToArray();
                 var encodedMessage = formatter.DecodeStructuredModeMessage(body, contentType: null, extensionAttributes: null);
                 var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                var data = encodedMessage?.Data;
+                var data = encodedMessage.Data;
                 
                 logger.LogInformation("[{Timestamp}] {QueueName}: \"{Data}\"", timestamp, queueName, data);
 
@@ -116,7 +116,7 @@ public static class RabbitMqHelper
         logger.LogInformation("[{Timestamp}] {EventName}: \"{Message}\"", timestamp, eventName, message);
         
         var formatter = new JsonEventFormatter();
-        var bodyData = formatter.EncodeStructuredModeMessage(evt, out var contentType);
+        var bodyData = formatter.EncodeStructuredModeMessage(evt, out _);
         
         await channel.BasicPublishAsync(
             exchange: "messages",

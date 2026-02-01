@@ -1,7 +1,5 @@
-using System.Text.Json;
 using Festivo.Shared.Helper;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 
 namespace Festivo.CallbackService.Services;
@@ -16,7 +14,7 @@ public class QueueBackgroundService(
     private const int RetryDelayMs = 2000;
     
     private const string ExchangeName = "messages";
-    private static readonly List<string> Queues = [];
+    private static readonly string[] Queues = [];
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

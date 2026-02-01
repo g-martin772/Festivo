@@ -1,3 +1,23 @@
 ﻿@inherits LayoutComponentBase
 
-@Body
+<div class="page">
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">🎉 Festivo</h1>
+            <nav class="nav">
+                <NavLink href="/" Match="NavLinkMatch.All">Home</NavLink>
+                <NavLink href="/purchase-ticket">Purchase Ticket</NavLink>
+                <NavLink href="/scan-ticket">Scan Entry/Exit</NavLink>
+                <NavLink href="/live-status">Live Status</NavLink>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        @Body
+    </main>
+    
+    <footer class="footer">
+        <p>&copy; 2026 Festivo Event Management System</p>
+    </footer>
+</div>

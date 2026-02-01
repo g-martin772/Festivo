@@ -1,7 +1,5 @@
-using System.Text.Json;
 using Festivo.Shared.Helper;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 
 namespace Festivo.LoggingService.Services;

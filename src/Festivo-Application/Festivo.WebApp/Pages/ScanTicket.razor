@@ -1,0 +1,101 @@
+@page "/scan-ticket"
+@using Festivo.WebApp.Models
+@using Festivo.WebApp.Services
+@inject AccessControlApiService AccessControlService
+
+<PageTitle>Scan Entry/Exit</PageTitle>
+
+<div class="container">
+    <h1>Scan Entry/Exit</h1>
+    
+    <div class="form-section">
+        <EditForm Model="@_scanRequest" OnValidSubmit="HandleScan">
+            <div class="form-group">
+                <label>Ticket Code:</label>
+                <InputText @bind-Value="_scanRequest.TicketCode" class="form-control" placeholder="Enter ticket code" />
+            </div>
+            
+            <div class="form-group">
+                <label>Action:</label>
+                <InputSelect @bind-Value="_scanRequest.Action" class="form-control">
+                    <option value="">-- Select Action --</option>
+                    <option value="entry">Entry</option>
+                    <option value="exit">Exit</option>
+                </InputSelect>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" disabled="@_isLoading">
+                @if (_isLoading)
+                {
+                    <span>Scanning...</span>
+                }
+                else
+                {
+                    <span>Scan Ticket</span>
+                }
+            </button>
+        </EditForm>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-error">
+            <strong>Error:</strong> @_errorMessage
+        </div>
+    }
+    
+    @if (_scanResponse != null)
+    {
+        @if (_scanResponse.Success)
+        {
+            <div class="alert alert-success">
+                <h3>✓ Scan Successful!</h3>
+                <div class="result-details">
+                    <p><strong>Message:</strong> @_scanResponse.Message</p>
+                    @if (_scanResponse.Timestamp.HasValue)
+                    {
+                        <p><strong>Timestamp:</strong> <code>@_scanResponse.Timestamp.Value.ToString("yyyy-MM-dd HH:mm:ss")</code></p>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                <h3>⚠ Scan Failed</h3>
+                <div class="result-details">
+                    <p><strong>Message:</strong> @_scanResponse.Message</p>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private ScanRequest _scanRequest = new();
+    private ScanResponse? _scanResponse;
+    private string? _errorMessage;
+    private bool _isLoading;
+
+    private async Task HandleScan()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        _scanResponse = null;
+        
+        var (success, response, error) = await AccessControlService.ScanTicketAsync(_scanRequest);
+        
+        if (success)
+        {
+            _scanResponse = response;
+            _scanRequest = new ScanRequest();
+        }
+        else
+        {
+            _errorMessage = error;
+        }
+        
+        _isLoading = false;
+    }
+}
+

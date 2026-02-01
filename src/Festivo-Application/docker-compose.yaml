@@ -1,4 +1,16 @@
 ﻿services:
+  festivo.webapp:
+    image: festivo.webapp
+    build:
+      context: .
+      dockerfile: Festivo.WebApp/Dockerfile
+    ports:
+      - "5100:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - festivo.apigateway
+
   festivo.apigateway:
     image: festivo.apigateway
     build:

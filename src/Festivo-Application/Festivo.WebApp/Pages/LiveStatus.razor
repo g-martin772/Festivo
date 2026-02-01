@@ -1,0 +1,156 @@
+@page "/live-status"
+@using Festivo.WebApp.Models
+@using Festivo.WebApp.Services
+@implements IDisposable
+
+@inject StatusApiService StatusService
+
+<PageTitle>Live Status</PageTitle>
+
+<div class="container">
+    <h1>Live Status</h1>
+    
+    <div class="status-controls">
+        <button class="btn btn-primary" @onclick="RefreshStatus" disabled="@_isLoading">
+            @if (_isLoading)
+            {
+                <span>Loading...</span>
+            }
+            else
+            {
+                <span>🔄 Refresh Status</span>
+            }
+        </button>
+        
+        <label class="auto-refresh-toggle">
+            <input type="checkbox" @bind="_autoRefresh" @bind:after="ToggleAutoRefresh" />
+            Auto-refresh (every 5s)
+        </label>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-error">
+            <strong>Error:</strong> @_errorMessage
+            <p class="info-text">This is a placeholder page. The live status endpoint will be implemented later.</p>
+        </div>
+    }
+    
+    @if (_statusResponse != null)
+    {
+        <div class="status-panel">
+            <h2>Current Capacity</h2>
+            <div class="capacity-display">
+                <div class="capacity-bar">
+                    <div class="capacity-fill" style="width: @GetCapacityPercentage()%"></div>
+                </div>
+                <p class="capacity-text">
+                    <strong>@_statusResponse.CurrentCapacity</strong> / @_statusResponse.MaxCapacity
+                    (@GetCapacityPercentage()%)
+                </p>
+            </div>
+            
+            @if (_statusResponse.RecentActivities != null && _statusResponse.RecentActivities.Any())
+            {
+                <h3>Recent Activities</h3>
+                <div class="activities-list">
+                    @foreach (var activity in _statusResponse.RecentActivities)
+                    {
+                        <div class="activity-item">@activity</div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="info-text">No recent activities to display.</p>
+            }
+        </div>
+    }
+    else if (!_isLoading && string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-info">
+            <p>Click "Refresh Status" to load live event status.</p>
+            <p class="info-text">⚠️ Placeholder: This page will display real-time crowd monitoring data once backend endpoints are implemented.</p>
+        </div>
+    }
+    
+    @if (_lastUpdated.HasValue)
+    {
+        <p class="last-updated">Last updated: @_lastUpdated.Value.ToString("HH:mm:ss")</p>
+    }
+</div>
+
+@code {
+    private string? _errorMessage;
+    private bool _isLoading;
+    private bool _autoRefresh;
+    private Timer? _refreshTimer;
+    private DateTime? _lastUpdated;
+    private LiveStatusResponse? _statusResponse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshStatus();
+    }
+
+    private async Task RefreshStatus()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        
+        var (success, response, error) = await StatusService.GetLiveStatusAsync();
+        
+        if (success)
+        {
+            _statusResponse = response;
+            _lastUpdated = DateTime.Now;
+        }
+        else
+        {
+            _errorMessage = error;
+        }
+        
+        _isLoading = false;
+    }
+
+    private void ToggleAutoRefresh()
+    {
+        if (_autoRefresh)
+        {
+            _refreshTimer = new Timer(async void (_) =>
+            {
+                try
+                {
+                    await InvokeAsync(async () => 
+                    {
+                        await RefreshStatus();
+                        StateHasChanged();
+                    });
+                }
+                catch (Exception e)
+                {
+                    await Console.Error.WriteLineAsync($"Error during auto-refresh: {e.Message}");
+                }
+            }, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+        }
+        else
+        {
+            _refreshTimer?.Dispose();
+            _refreshTimer = null;
+        }
+    }
+
+    private int GetCapacityPercentage()
+    {
+        if (_statusResponse == null || _statusResponse.MaxCapacity == 0)
+            return 0;
+        
+        return (int)((double)_statusResponse.CurrentCapacity / _statusResponse.MaxCapacity * 100);
+    }
+
+    public void Dispose()
+    {
+        _refreshTimer?.Dispose();
+    }
+}
+
