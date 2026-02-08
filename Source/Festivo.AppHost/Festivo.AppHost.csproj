@@ -9,8 +9,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Festivo.AccessControlService\Festivo.AccessControlService.csproj"/>
+        <ProjectReference Include="..\Festivo.ApiGateway\Festivo.ApiGateway.csproj"/>
+        <ProjectReference Include="..\Festivo.CallbackService\Festivo.CallbackService.csproj"/>
+        <ProjectReference Include="..\Festivo.CrowdMonitorService\Festivo.CrowdMonitorService.csproj"/>
+        <ProjectReference Include="..\Festivo.NotificationService\Festivo.NotificationService.csproj"/>
+        <ProjectReference Include="..\Festivo.OrchestratorService\Festivo.OrchestratorService.csproj"/>
+        <ProjectReference Include="..\Festivo.ScheduleService\Festivo.ScheduleService.csproj"/>
         <ProjectReference Include="..\Festivo.TicketService\Festivo.TicketService.csproj"/>
+        <ProjectReference Include="..\Festivo.WebApp\Festivo.WebApp.csproj"/>
         <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
+        <PackageReference Include="Aspire.Hosting.PostgreSQL"/>
     </ItemGroup>
 
 </Project>

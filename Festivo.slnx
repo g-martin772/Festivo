@@ -2,5 +2,13 @@
     <Project Path="Source/Festivo.AppHost/Festivo.AppHost.csproj" />
     <Project Path="Source/Festivo.ServiceDefaults/Festivo.ServiceDefaults.csproj" />
     <Project Path="Source/Festivo.Shared/Festivo.Shared.csproj" />
+    <Project Path="Source/Festivo.ApiGateway/Festivo.ApiGateway.csproj" />
     <Project Path="Source/Festivo.TicketService/Festivo.TicketService.csproj" />
+    <Project Path="Source/Festivo.AccessControlService/Festivo.AccessControlService.csproj" />
+    <Project Path="Source/Festivo.ScheduleService/Festivo.ScheduleService.csproj" />
+    <Project Path="Source/Festivo.CrowdMonitorService/Festivo.CrowdMonitorService.csproj" />
+    <Project Path="Source/Festivo.NotificationService/Festivo.NotificationService.csproj" />
+    <Project Path="Source/Festivo.OrchestratorService/Festivo.OrchestratorService.csproj" />
+    <Project Path="Source/Festivo.CallbackService/Festivo.CallbackService.csproj" />
+    <Project Path="Source/Festivo.WebApp/Festivo.WebApp.csproj" />
 </Solution>
