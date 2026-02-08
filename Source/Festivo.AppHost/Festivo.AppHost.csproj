@@ -1,0 +1,16 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.1.0">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UserSecretsId>8349c107-2329-4085-bca4-21939c3896c8</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Festivo.TicketService\Festivo.TicketService.csproj"/>
+        <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
+    </ItemGroup>
+
+</Project>

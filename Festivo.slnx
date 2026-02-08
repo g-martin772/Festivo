@@ -1,0 +1,6 @@
+﻿<Solution>
+    <Project Path="Source/Festivo.AppHost/Festivo.AppHost.csproj" />
+    <Project Path="Source/Festivo.ServiceDefaults/Festivo.ServiceDefaults.csproj" />
+    <Project Path="Source/Festivo.Shared/Festivo.Shared.csproj" />
+    <Project Path="Source/Festivo.TicketService/Festivo.TicketService.csproj" />
+</Solution>

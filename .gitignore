@@ -1,4 +1,6 @@
 *.env
-/.idea/*
-/obj/*
-/bin/*
+.idea/
+obj/
+bin/
+*.user
+*.http
