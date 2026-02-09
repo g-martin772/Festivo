@@ -1,5 +1,110 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="content">
-    @Body
+<div class="layout">
+    <div class="main-icon">
+        <FluentAnchor Appearance="Appearance.Stealth" Href="/" Class="logo">
+            <FluentIcon Value="@(new Icons.Regular.Size24.Board())"/>
+        </FluentAnchor>
+    </div>
+
+    <FluentHeader>
+        <FluentAnchor Appearance="Appearance.Stealth" Href="/" Class="logo">
+            Festivo
+        </FluentAnchor>
+        <FluentSpacer/>
+        <FluentAnchor Href="https://github.com/nwinkler-edu/festivo-distributed-system-festivo-team-07" Target="_blank"
+                      Appearance="Appearance.Stealth"
+                      Class="header-button">
+            <FluentIcon Value="@(new Icons.Filled.Size24.Code())"/>
+        </FluentAnchor>
+    </FluentHeader>
+
+    <FluentAppBar PopoverShowSearch="false" Class="desktop-nav-menu">
+        <FluentAppBarItem Href="/"
+                          Match="NavLinkMatch.All"
+                          IconRest="HomeIcon()"
+                          IconActive="HomeIcon(active: true)"
+                          Text="Home"/>
+        <FluentAppBarItem Href="/Entry"
+                          IconRest="EntryIcon()"
+                          IconActive="EntryIcon(active: true)"
+                          Text="Entry"/>
+        <FluentAppBarItem Href="/Tickets"
+                          IconRest="TicketsIcon()"
+                          IconActive="TicketsIcon(active: true)"
+                          Text="Tickets"/>
+        <FluentAppBarItem Href="/Monitor"
+                          IconRest="MonitorIcon()"
+                          IconActive="MonitorIcon(active: true)"
+                          Text="Monitor"/>
+        <FluentAppBarItem Href="/settings"
+                          IconRest="SettingsIcon()"
+                          IconActive="SettingsIcon(active: true)"
+                          Text="Settings"/>
+    </FluentAppBar>
+
+    <FluentBodyContent Class="custom-body-content body-content">
+        <FluentToastProvider MaxToastCount="3" Timeout="5000"/>
+        <div class="content-layout">
+            <header class="content-header" style="padding-top: 8px;">
+                <FluentToolbar Class="title-toolbar-inline" Orientation="Orientation.Horizontal">
+                    @Title
+                    <FluentSpacer/>
+                    Festivo
+                </FluentToolbar>
+            </header>
+
+            <main class="content-main">
+                <CascadingValue Value="this">
+                    @Body
+                </CascadingValue>
+            </main>
+
+            <footer style="grid-area: footer">(C) Festivo - Neuhold, Martin 2026</footer>
+
+        </div>
+    </FluentBodyContent>
 </div>
+
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+<FluentDesignTheme Mode="DesignThemeModes.Dark"/>
+<FluentDialogProvider/>
+<FluentTooltipProvider/>
+<FluentMessageBarProvider/>
+<FluentMenuProvider/>
+
+@code {
+    public string Title { get; set; } = "Festivo";
+
+    private static Icon HomeIcon(bool active = false) =>
+        active
+            ? new Icons.Filled.Size24.Home()
+            : new Icons.Regular.Size24.Home();
+
+    private static Icon EntryIcon(bool active = false) =>
+        active
+            ? new Icons.Filled.Size24.Door()
+            : new Icons.Regular.Size24.Door();
+
+    private static Icon TicketsIcon(bool active = false) =>
+        active
+            ? new Icons.Filled.Size24.TicketDiagonal()
+            : new Icons.Regular.Size24.TicketDiagonal();
+
+    private static Icon MonitorIcon(bool active = false) =>
+        active
+            ? new Icons.Filled.Size24.Tv()
+            : new Icons.Regular.Size24.Tv();
+
+    private static Icon SettingsIcon(bool active = false) =>
+        active
+            ? new Icons.Filled.Size24.Settings()
+            : new Icons.Regular.Size24.Settings();
+
+}

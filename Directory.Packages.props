@@ -24,5 +24,6 @@
         <PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.1.0"/>
         <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.1.0"/>
         <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.1.0"/>
+        <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0"/>
     </ItemGroup>
 </Project>

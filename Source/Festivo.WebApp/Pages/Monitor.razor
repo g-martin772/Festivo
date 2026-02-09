@@ -1,0 +1,12 @@
+@page "/Monitor"
+<h3>Monitor</h3>
+
+@code {
+    [CascadingParameter]
+    public MainLayout? Layout { get; set; } 
+
+    protected override void OnInitialized()
+    {
+        Layout?.Title = "Monitoring";
+    }
+}

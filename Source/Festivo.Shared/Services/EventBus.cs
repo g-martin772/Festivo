@@ -22,6 +22,8 @@ public class EventBus(
 
     public delegate Task EventHandler<T>(CloudEvent e, T body, BasicDeliverEventArgs args,
         CancellationToken ct);
+    
+    public TaskCompletionSource Initialization { get; } = new();
 
     IConnection? m_Connection;
     DefaultObjectPool<IChannel>? m_ChannelPool;
@@ -39,6 +41,8 @@ public class EventBus(
             cancellationToken: ct);
 
         foreach (var binding in queueBindings) await DeclareQueue(binding.QueueName, binding.RoutingKey, ct);
+        
+        Initialization.SetResult();
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

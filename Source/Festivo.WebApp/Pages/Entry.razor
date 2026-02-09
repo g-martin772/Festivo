@@ -1,0 +1,12 @@
+@page "/Entry"
+<h3>Entry</h3>
+
+@code {
+    [CascadingParameter]
+    public MainLayout? Layout { get; set; } 
+
+    protected override void OnInitialized()
+    {
+        Layout?.Title = "Entry";
+    }
+}

@@ -30,6 +30,8 @@ app.MapControllers();
 
 app.MapDefaultEndpoints();
 
+app.MapGet("/", () => "Hello World!");
+
 app.Run();
 
 class Demo(EventBus eventBus, ILogger<Demo> logger) : BackgroundService

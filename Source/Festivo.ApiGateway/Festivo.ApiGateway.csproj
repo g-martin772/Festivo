@@ -12,8 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Festivo.ServiceDefaults\Festivo.ServiceDefaults.csproj" />
-      <ProjectReference Include="..\Festivo.Shared\Festivo.Shared.csproj" />
+        <ProjectReference Include="..\Festivo.ServiceDefaults\Festivo.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\Festivo.Shared\Festivo.Shared.csproj"/>
+        <PackageReference Include="Yarp.ReverseProxy"/>
     </ItemGroup>
 
 </Project>
