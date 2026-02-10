@@ -10,6 +10,8 @@ public class EntryRequestedEvent
 
 public class EntryGrantedEvent
 {
+    public Guid EventId { get; set; }
+    public string TicketType { get; set; } = string.Empty;
     public Guid TicketCode { get; set; }
     public Guid GateId { get; set; }
     public DateTime EntryTime { get; set; }
@@ -35,6 +37,8 @@ public class ExitRequestedEvent
 
 public class ExitGrantedEvent
 {
+    public Guid EventId { get; set; }
+    public string TicketType { get; set; } = string.Empty;
     public Guid TicketCode { get; set; }
     public Guid GateId { get; set; }
     public DateTime ExitTime { get; set; }
@@ -49,4 +53,3 @@ public class ExitDeniedEvent
     public DateTime DeniedTime { get; set; }
     public Guid CustomerId { get; set; }
 }
-

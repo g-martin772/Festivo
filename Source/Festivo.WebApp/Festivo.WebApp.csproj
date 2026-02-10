@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Festivo.AccessControlService.Client\Festivo.AccessControlService.Client.csproj" />
+      <ProjectReference Include="..\Festivo.CrowdMonitorService.Client\Festivo.CrowdMonitorService.Client.csproj" />
       <ProjectReference Include="..\Festivo.TicketService.Client\Festivo.TicketService.Client.csproj" />
     </ItemGroup>
 

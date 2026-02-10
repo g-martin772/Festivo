@@ -8,6 +8,7 @@
     <Project Path="Source/Festivo.AccessControlService.Client/Festivo.AccessControlService.Client.csproj" />
     <Project Path="Source/Festivo.AccessControlService/Festivo.AccessControlService.csproj" />
     <Project Path="Source/Festivo.ScheduleService/Festivo.ScheduleService.csproj" />
+    <Project Path="Source/Festivo.CrowdMonitorService.Client/Festivo.CrowdMonitorService.Client.csproj" />
     <Project Path="Source/Festivo.CrowdMonitorService/Festivo.CrowdMonitorService.csproj" />
     <Project Path="Source/Festivo.NotificationService/Festivo.NotificationService.csproj" />
     <Project Path="Source/Festivo.OrchestratorService/Festivo.OrchestratorService.csproj" />

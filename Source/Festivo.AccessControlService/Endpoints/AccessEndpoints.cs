@@ -101,6 +101,8 @@ public static class AccessEndpoints
         reason = "Ticked verified";
         var t3 = eventBus.PublishMessageAsync(new EntryGrantedEvent
         {
+            EventId = request.EventId,
+            TicketType = entry.Type,
             CustomerId = request.CustomerId,
             TicketCode = request.TicketCode,
             GateId = request.GateId,
@@ -201,6 +203,8 @@ public static class AccessEndpoints
         reason = "Ticked verified";
         var t3 = eventBus.PublishMessageAsync(new ExitGrantedEvent
         {
+            EventId = request.EventId,
+            TicketType = entry.Type,
             CustomerId = request.CustomerId,
             TicketCode = request.TicketCode,
             GateId = request.GateId,

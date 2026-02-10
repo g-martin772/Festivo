@@ -1,12 +1,29 @@
 @page "/Monitor"
+@inject CrowdClient CrowdClient
+
 <h3>Monitor</h3>
+
+<div>
+    @if (m_OccupancyData is null)
+    {
+        <p>Loading</p>
+    }
+    else
+    {
+        <pre>@m_OccupancyData</pre>
+    }
+</div>
 
 @code {
     [CascadingParameter]
-    public MainLayout? Layout { get; set; } 
+    public MainLayout? Layout { get; set; }
 
-    protected override void OnInitialized()
+    private string? m_OccupancyData;
+
+    protected override async Task OnInitializedAsync()
     {
         Layout?.Title = "Monitoring";
+
+        m_OccupancyData = await CrowdClient.GetData();
     }
 }
