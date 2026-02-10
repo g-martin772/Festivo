@@ -5,6 +5,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options => options.AddDefaultPolicy(policyBuilder =>
+{
+    policyBuilder.AllowAnyOrigin();
+    policyBuilder.AllowAnyMethod();
+    policyBuilder.AllowAnyHeader();
+}));
+
 builder.Services.AddReverseProxy()
     .LoadFromMemory([
         RouteConfigFromService("AccessControlService", useSignalR: true),
@@ -94,8 +101,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapDefaultEndpoints();
+app.UseCors();
 
+app.MapDefaultEndpoints();
 app.MapReverseProxy();
 
 app.Run();

@@ -47,7 +47,7 @@ public partial class QueueWorker(
                 m_DbContext.SaveChanges();
             }
         }
-        catch (DbUpdateException e)
+        catch (DbUpdateException)
         {
             LogTicketCodeAlreadyExistsInTheDatabaseSkipping(logger, body.TicketCode);
         }

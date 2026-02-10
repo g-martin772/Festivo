@@ -53,7 +53,8 @@
             {
                 TicketType = m_Model.TicketType,
                 TicketTarget = m_Model.TicketTarget,
-                CustomerId = Guid.Parse("00000000-0000-0000-0000-000000000001")
+                CustomerId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                EventId = Guid.Parse("00000000-0000-0000-0000-000000000001")
             });
 
             m_Output = $"You paid {response.Price} for your ticket. ({response.Code})";

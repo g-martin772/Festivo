@@ -2,7 +2,7 @@ namespace Festivo.Shared.Events;
 
 public class OccupancyUpdatedEvent
 {
-    public string StageId { get; set; } = string.Empty;
+    public Guid EventId { get; set; }
     public string StageName { get; set; } = string.Empty;
     public int CurrentOccupancy { get; set; }
     public int MaxCapacity { get; set; }
@@ -12,7 +12,7 @@ public class OccupancyUpdatedEvent
 
 public class CapacityWarningIssuedEvent
 {
-    public string StageId { get; set; } = string.Empty;
+    public Guid EventId { get; set; }
     public string StageName { get; set; } = string.Empty;
     public int CurrentOccupancy { get; set; }
     public int MaxCapacity { get; set; }
@@ -23,7 +23,7 @@ public class CapacityWarningIssuedEvent
 
 public class CapacityCriticalIssuedEvent
 {
-    public string StageId { get; set; } = string.Empty;
+    public Guid EventId { get; set; }
     public string StageName { get; set; } = string.Empty;
     public int CurrentOccupancy { get; set; }
     public int MaxCapacity { get; set; }
@@ -34,7 +34,7 @@ public class CapacityCriticalIssuedEvent
 
 public class CapacityBackToNormalEvent
 {
-    public string StageId { get; set; } = string.Empty;
+    public Guid EventId { get; set; }
     public string StageName { get; set; } = string.Empty;
     public int CurrentOccupancy { get; set; }
     public int MaxCapacity { get; set; }
