@@ -18,7 +18,9 @@ var crowdMonitorDb = postgres.AddDatabase("CrowdMonitorDb");
 var ticketDb = postgres.AddDatabase("TicketDb");
 
 var queue = builder.AddRabbitMQ("RabbitMQ")
-    .WithLifetime(ContainerLifetime.Persistent);
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithDataVolume()
+    .WithManagementPlugin();
 
 var ticketService = builder.AddProject<Projects.Festivo_TicketService>("TicketService")
     .WithReference(queue)

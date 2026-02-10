@@ -1,29 +1,183 @@
 @page "/Monitor"
 @inject CrowdClient CrowdClient
+@implements IAsyncDisposable
 
 <h3>Monitor</h3>
 
-<div>
-    @if (m_OccupancyData is null)
-    {
-        <p>Loading</p>
-    }
-    else
-    {
-        <pre>@m_OccupancyData</pre>
-    }
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <div>
+        <h4>Occupancy Data</h4>
+        @if (m_OccupancyData is null)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <pre
+                style="background-color: #151515; padding: 10px; border-radius: 5px; max-height: 600px; overflow-y: auto;">
+                @m_OccupancyData
+            </pre>
+        }
+    </div>
+
+    <div>
+        <h4>Real-Time Events</h4>
+        <div style="margin-bottom: 10px;">
+            <strong>Connection Status:</strong>
+            <span style="color: @(m_IsConnected ? "green" : "red");">
+                @(m_IsConnected ? "Connected" : "Disconnected")
+            </span>
+        </div>
+        <div style="background-color: #151515; padding: 10px; border-radius: 5px; max-height: 600px; overflow-y: auto;">
+            @if (m_Events.Count == 0)
+            {
+                <p style="color: #999;">Waiting for events...</p>
+            }
+            else
+            {
+                @foreach (var evt in m_Events.AsEnumerable().Reverse())
+                {
+                    <div
+                        style="margin-bottom: 15px; padding: 10px; background-color: #2a2a2a; border-left: 4px solid @GetEventColor(evt.Type); border-radius: 3px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <strong style="color: @GetEventColor(evt.Type);">@evt.Type</strong>
+                            <span style="color: #999; font-size: 0.9em;">@evt.Timestamp.ToString("HH:mm:ss")</span>
+                        </div>
+                        <div style="color: #d4d4d4; margin-bottom: 5px;">@evt.Message</div>
+                        @if (!string.IsNullOrEmpty(evt.Details))
+                        {
+                            <details style="margin-top: 5px;">
+                                <summary style="cursor: pointer; color: #999; font-size: 0.9em;">Details</summary>
+                                <pre
+                                    style="margin-top: 5px; font-size: 0.85em; color: #b4b4b4; background-color: #1e1e1e; padding: 8px; border-radius: 3px; overflow-x: auto;">@evt.Details</pre>
+                            </details>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
 </div>
 
 @code {
-    [CascadingParameter]
-    public MainLayout? Layout { get; set; }
+    [CascadingParameter] public MainLayout? Layout { get; set; }
 
     private string? m_OccupancyData;
+    private HubConnection? m_HubConnection;
+    private bool m_IsConnected;
+    private List<EventInfo> m_Events = new();
+
+    private class EventInfo
+    {
+        public string Type { get; set; } = "";
+        public string Message { get; set; } = "";
+        public string Details { get; set; } = "";
+        public DateTime Timestamp { get; set; } = DateTime.Now;
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        Layout?.Title = "Monitoring";
+        Layout!.Title = "Monitoring";
 
         m_OccupancyData = await CrowdClient.GetData();
+
+        m_HubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7181/notificationservice/hubs/notifications")
+            .WithAutomaticReconnect()
+            .Build();
+
+        m_HubConnection.On<object>("TicketPurchased", (data) => HandleEvent("TicketPurchased", data));
+        m_HubConnection.On<object>("EntryGranted", (data) => HandleEvent("EntryGranted", data));
+        m_HubConnection.On<object>("EntryDenied", (data) => HandleEvent("EntryDenied", data));
+        m_HubConnection.On<object>("OccupancyUpdated", (data) => HandleEvent("OccupancyUpdated", data));
+        m_HubConnection.On<object>("CapacityWarning", (data) => HandleEvent("CapacityWarning", data));
+
+        m_HubConnection.Reconnecting += (error) =>
+        {
+            m_IsConnected = false;
+            InvokeAsync(StateHasChanged);
+            return Task.CompletedTask;
+        };
+
+        m_HubConnection.Reconnected += (connectionId) =>
+        {
+            m_IsConnected = true;
+            InvokeAsync(StateHasChanged);
+            return Task.CompletedTask;
+        };
+
+        m_HubConnection.Closed += (error) =>
+        {
+            m_IsConnected = false;
+            InvokeAsync(StateHasChanged);
+            return Task.CompletedTask;
+        };
+
+        try
+        {
+            await m_HubConnection.StartAsync();
+            m_IsConnected = true;
+        }
+        catch (Exception ex)
+        {
+            m_IsConnected = false;
+            m_Events.Add(new EventInfo
+            {
+                Type = "Error",
+                Message = $"Failed to connect to notification hub: {ex.Message}",
+                Details = ex.ToString()
+            });
+        }
     }
+
+    private void HandleEvent(string eventType, object data)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
+
+        var dataDict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(json);
+        var message = dataDict?.ContainsKey("Message") == true
+            ? dataDict["Message"].GetString() ?? "No message"
+            : "Event received";
+
+        m_Events.Add(new EventInfo
+        {
+            Type = eventType,
+            Message = message,
+            Details = json
+        });
+
+        if (m_Events.Count > 50)
+        {
+            m_Events.RemoveAt(0);
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string GetEventColor(string eventType)
+    {
+        return eventType switch
+        {
+            "TicketPurchased" => "#4ade80", // Green
+            "EntryGranted" => "#60a5fa", // Blue
+            "EntryDenied" => "#f87171", // Red
+            "OccupancyUpdated" => "#fbbf24", // Amber
+            "CapacityWarning" => "#fb923c", // Orange
+            "Error" => "#a3a3a3", // Gray
+            _ => "#a3a3a3"
+        };
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (m_HubConnection is not null)
+        {
+            await m_HubConnection.DisposeAsync();
+        }
+    }
+
 }
+
