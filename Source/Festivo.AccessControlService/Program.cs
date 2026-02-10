@@ -7,6 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options => options.AddDefaultPolicy(policyBuilder =>
+{
+    policyBuilder.AllowAnyOrigin();
+    policyBuilder.AllowAnyMethod();
+    policyBuilder.AllowAnyHeader();
+}));
+
 builder.AddServiceDefaults();
 
 builder.AddRabbitMQClient("RabbitMQ");
@@ -28,8 +35,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
+app.UseCors();
 
 app.MapDefaultEndpoints();
 app.MapAccessEndpoints();

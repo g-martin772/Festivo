@@ -13,13 +13,14 @@ public partial class QueueWorker(
     ILogger<QueueWorker> logger,
     IServiceProvider sp) : BackgroundService
 {
+    private IServiceScope? m_Scope;
     private AccessControlDbContext m_DbContext = null!;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var scope = sp.CreateScope();
+        m_Scope = sp.CreateScope();
         // ReSharper disable once InconsistentlySynchronizedField
-        m_DbContext = scope.ServiceProvider.GetRequiredService<AccessControlDbContext>();
+        m_DbContext = m_Scope.ServiceProvider.GetRequiredService<AccessControlDbContext>();
 
         await eventBus.Initialization.Task;
 

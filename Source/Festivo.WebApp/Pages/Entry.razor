@@ -1,12 +1,105 @@
 @page "/Entry"
-<h3>Entry</h3>
+@using Festivo.AccessControlService.Client.Models
+@inject AccessClient AccessClient
+
+<EditForm Model="@m_Model">
+    <DataAnnotationsValidator/>
+    <FluentValidationSummary/>
+
+    <FluentStack Orientation="Orientation.Vertical">
+        <div>
+            <FluentTextField Name="TicketCode" @bind-Value="m_Model.TicketCode" Label="Ticket Code (GUID)" Required/>
+            <FluentValidationMessage For="@(() => m_Model.TicketCode)"/>
+        </div>
+        <div>
+            <FluentTextField Name="GateType" @bind-Value="m_Model.GateType" Label="Gate Type" Required/>
+            <FluentValidationMessage For="@(() => m_Model.GateType)"/>
+        </div>
+        <div>
+            <FluentTextField Name="GateId" @bind-Value="m_Model.GateId" Label="Gate ID (GUID)" Required/>
+            <FluentValidationMessage For="@(() => m_Model.GateId)"/>
+        </div>
+        <FluentStack Orientation="Orientation.Horizontal">
+            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" OnClick="ScanEntry">Scan Entry</FluentButton>
+            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" OnClick="ScanExit">Scan Exit</FluentButton>
+        </FluentStack>
+    </FluentStack>
+</EditForm>
+
+<FluentSpacer/>
+
+<FluentLabel>@m_Output</FluentLabel>
 
 @code {
     [CascadingParameter]
-    public MainLayout? Layout { get; set; } 
+    public MainLayout? Layout { get; set; }
+
+    private Model m_Model = new Model
+    {
+        TicketCode = "00000000-0000-0000-0000-000000000001",
+        GateType = GateType.Basic,
+        GateId = "00000000-0000-0000-0000-000000000001"
+    };
+
+    private string m_Output = "";
 
     protected override void OnInitialized()
     {
         Layout?.Title = "Entry";
+    }
+
+    public record Model
+    {
+        public required string TicketCode { get; set; }
+        public required string GateType { get; set; }
+        public required string GateId { get; set; }
+    }
+
+    private async Task ScanEntry()
+    {
+        try
+        {
+            var response = await AccessClient.ScanEntryTicketAsync(new ScanRequest()
+            {
+                TicketCode = Guid.Parse(m_Model.TicketCode),
+                GateType = m_Model.GateType,
+                GateId = Guid.Parse(m_Model.GateId),
+                CustomerId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                EventId = Guid.Parse("00000000-0000-0000-0000-000000000001")
+            });
+
+            m_Output = response.EntryGranted 
+                ? $"✓ Entry Granted: {response.Reason}" 
+                : $"✗ Entry Denied: {response.Reason}";
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            m_Output = $"Failed to scan entry: {e.Message}";
+        }
+    }
+
+    private async Task ScanExit()
+    {
+        try
+        {
+            var response = await AccessClient.ScanExitTicketAsync(new ScanRequest()
+            {
+                TicketCode = Guid.Parse(m_Model.TicketCode),
+                GateType = m_Model.GateType,
+                GateId = Guid.Parse(m_Model.GateId),
+                CustomerId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                EventId = Guid.Parse("00000000-0000-0000-0000-000000000001")
+            });
+
+            m_Output = response.EntryGranted 
+                ? $"✓ Exit Granted: {response.Reason}" 
+                : $"✗ Exit Denied: {response.Reason}";
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            m_Output = $"Failed to scan exit: {e.Message}";
+        }
     }
 }

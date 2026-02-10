@@ -13,6 +13,7 @@ public static class EventTypeRegistry
         { "com.festivo.access.entry-requested.v1", typeof(EntryRequestedEvent) },
         { "com.festivo.access.entry-granted.v1", typeof(EntryGrantedEvent) },
         { "com.festivo.access.entry-denied.v1", typeof(EntryDeniedEvent) },
+        { "com.festivo.access.exit-requested.v1", typeof(ExitRequestedEvent) },
         { "com.festivo.access.exit-granted.v1", typeof(ExitGrantedEvent) },
         { "com.festivo.access.exit-denied.v1", typeof(ExitDeniedEvent) },
         

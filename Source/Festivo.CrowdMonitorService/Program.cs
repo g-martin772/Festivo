@@ -3,8 +3,14 @@ using Festivo.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+builder.Services.AddCors(options => options.AddDefaultPolicy(policyBuilder =>
+{
+    policyBuilder.AllowAnyOrigin();
+    policyBuilder.AllowAnyMethod();
+    policyBuilder.AllowAnyHeader();
+}));
 
 builder.AddServiceDefaults();
 
@@ -21,10 +27,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
+app.UseCors();
 
 app.MapDefaultEndpoints();
 
