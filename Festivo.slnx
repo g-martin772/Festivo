@@ -3,7 +3,9 @@
     <Project Path="Source/Festivo.ServiceDefaults/Festivo.ServiceDefaults.csproj" />
     <Project Path="Source/Festivo.Shared/Festivo.Shared.csproj" />
     <Project Path="Source/Festivo.ApiGateway/Festivo.ApiGateway.csproj" />
+    <Project Path="Source/Festivo.TicketService.Client/Festivo.TicketService.Client.csproj" />
     <Project Path="Source/Festivo.TicketService/Festivo.TicketService.csproj" />
+    <Project Path="Source/Festivo.AccessControlService.Client/Festivo.AccessControlService.Client.csproj" />
     <Project Path="Source/Festivo.AccessControlService/Festivo.AccessControlService.csproj" />
     <Project Path="Source/Festivo.ScheduleService/Festivo.ScheduleService.csproj" />
     <Project Path="Source/Festivo.CrowdMonitorService/Festivo.CrowdMonitorService.csproj" />

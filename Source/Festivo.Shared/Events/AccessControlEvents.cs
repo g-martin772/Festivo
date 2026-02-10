@@ -2,48 +2,51 @@ namespace Festivo.Shared.Events;
 
 public class EntryRequestedEvent
 {
-    public string TicketId { get; set; } = string.Empty;
-    public string TicketCode { get; set; } = string.Empty;
-    public string GateId { get; set; } = string.Empty;
+    public Guid TicketCode { get; set; }
+    public Guid GateId { get; set; }
     public DateTime RequestTime { get; set; }
-    public string CustomerId { get; set; } = string.Empty;
+    public Guid CustomerId { get; set; }
 }
 
 public class EntryGrantedEvent
 {
-    public string TicketId { get; set; } = string.Empty;
-    public string TicketCode { get; set; } = string.Empty;
-    public string GateId { get; set; } = string.Empty;
+    public Guid TicketCode { get; set; }
+    public Guid GateId { get; set; }
     public DateTime EntryTime { get; set; }
-    public string CustomerId { get; set; } = string.Empty;
+    public Guid CustomerId { get; set; }
 }
 
 public class EntryDeniedEvent
 {
-    public string TicketId { get; set; } = string.Empty;
-    public string TicketCode { get; set; } = string.Empty;
-    public string GateId { get; set; } = string.Empty;
+    public Guid TicketCode { get; set; }
+    public Guid GateId { get; set; }
     public string Reason { get; set; } = string.Empty;
     public DateTime DeniedTime { get; set; }
-    public string CustomerId { get; set; } = string.Empty;
+    public Guid CustomerId { get; set; }
+}
+
+public class ExitRequestedEvent
+{
+    public Guid TicketCode { get; set; }
+    public Guid GateId { get; set; }
+    public DateTime RequestTime { get; set; }
+    public Guid CustomerId { get; set; }
 }
 
 public class ExitGrantedEvent
 {
-    public string TicketId { get; set; } = string.Empty;
-    public string TicketCode { get; set; } = string.Empty;
-    public string GateId { get; set; } = string.Empty;
+    public Guid TicketCode { get; set; }
+    public Guid GateId { get; set; }
     public DateTime ExitTime { get; set; }
-    public string CustomerId { get; set; } = string.Empty;
+    public Guid CustomerId { get; set; }
 }
 
 public class ExitDeniedEvent
 {
-    public string TicketId { get; set; } = string.Empty;
-    public string TicketCode { get; set; } = string.Empty;
-    public string GateId { get; set; } = string.Empty;
+    public Guid TicketCode { get; set; }
+    public Guid GateId { get; set; }
     public string Reason { get; set; } = string.Empty;
     public DateTime DeniedTime { get; set; }
-    public string CustomerId { get; set; } = string.Empty;
+    public Guid CustomerId { get; set; }
 }
 

@@ -3,18 +3,28 @@ var builder = DistributedApplication.CreateBuilder(args);
 var username = builder.AddParameter("db-username");
 var password = builder.AddParameter("db-pw");
 
+var cache = builder.AddRedis("cache")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithDataVolume()
+    .WithRedisCommander();
+
 var postgres = builder.AddPostgres("PostgresDb", username, password)
     .WithLifetime(ContainerLifetime.Persistent)
     .WithDataVolume()
     .WithPgWeb(options => { options.WithLifetime(ContainerLifetime.Persistent); });
 
+var accessControlDb = postgres.AddDatabase("AccessControlDb");
+var crowdMonitorDb = postgres.AddDatabase("CrowdMonitorDb");
+var ticketDb = postgres.AddDatabase("TicketDb");
 
 var queue = builder.AddRabbitMQ("RabbitMQ")
     .WithLifetime(ContainerLifetime.Persistent);
 
 var ticketService = builder.AddProject<Projects.Festivo_TicketService>("TicketService")
     .WithReference(queue)
-    .WaitFor(queue);
+    .WaitFor(queue)
+    .WithReference(ticketDb)
+    .WaitFor(ticketDb);
 
 var callbackService = builder.AddProject<Projects.Festivo_CallbackService>("CallbackService")
     .WithReference(queue)
@@ -22,11 +32,15 @@ var callbackService = builder.AddProject<Projects.Festivo_CallbackService>("Call
 
 var accessControlService = builder.AddProject<Projects.Festivo_AccessControlService>("AccessControlService")
     .WithReference(queue)
-    .WaitFor(queue);
+    .WaitFor(queue)
+    .WithReference(accessControlDb)
+    .WaitFor(accessControlDb);
 
 var crowdMonitorService = builder.AddProject<Projects.Festivo_CrowdMonitorService>("CrowdMonitorService")
     .WithReference(queue)
-    .WaitFor(queue);
+    .WaitFor(queue)
+    .WithReference(crowdMonitorDb)
+    .WaitFor(crowdMonitorDb);
 
 var notificationService = builder.AddProject<Projects.Festivo_NotificationService>("NotificationService")
     .WithReference(queue)

@@ -60,7 +60,7 @@ RouteConfig RouteConfigFromService(string serviceName, bool useSignalR = false)
     var transforms = new List<Dictionary<string, string>>
     {
         new() { ["PathRemovePrefix"] = $"/{normalizedServiceName}" },
-    };
+    };  
 
     if (useSignalR)
     {
@@ -79,7 +79,8 @@ RouteConfig RouteConfigFromService(string serviceName, bool useSignalR = false)
         RouteId = $"{normalizedServiceName}_route",
         ClusterId = $"{normalizedServiceName}_cluster",
         Match = new RouteMatch { Path = $"/{normalizedServiceName}/{{**catch-all}}" },
-        Transforms = transforms
+        Transforms = transforms,
+        CorsPolicy = "Default"
     };
 
     return routeConfig;

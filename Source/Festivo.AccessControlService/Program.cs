@@ -1,19 +1,24 @@
-using Festivo.Shared.Events;
+using Festivo.AccessControlService.Data;
+using Festivo.AccessControlService.Endpoints;
+using Festivo.AccessControlService.Services;
 using Festivo.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.AddServiceDefaults();
 
 builder.AddRabbitMQClient("RabbitMQ");
 builder.Services.AddMessaging([
-    ("test", "#")
+    ("TickedPurchased", "com.festivo.ticket.purchased.v1"),
+    ("TickedRefunded", "com.festivo.ticket.refunded.v1")
 ]);
 
-builder.Services.AddHostedService<Demo>();
+builder.AddNpgsqlDbContext<AccessControlDbContext>("AccessControlDb");
+builder.Services.AddHostedService<DbInitializer<AccessControlDbContext>>();
+
+builder.Services.AddHostedService<QueueWorker>();
 
 var app = builder.Build();
 
@@ -26,36 +31,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
-
 app.MapDefaultEndpoints();
+app.MapAccessEndpoints();
 
 app.Run();
-
-class Demo(EventBus eventBus, ILogger<Demo> logger) : BackgroundService
-{
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        await Task.Delay(2000, stoppingToken);
-
-        await eventBus.AddConsumerAsync<EntryRequestedEvent>("test", (@event, body, args, ct) =>
-        {
-            logger.LogInformation("Entry Requested Event Received: {@Content}", body.CustomerId);
-            return Task.CompletedTask;
-        }, stoppingToken);
-
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            await eventBus.PublishMessageAsync(new EntryRequestedEvent
-            {
-                CustomerId = "asd",
-                GateId = "asd",
-                TicketId = "asd",
-                RequestTime = DateTime.Now,
-                TicketCode = "asd"
-            }, stoppingToken);
-            
-            await Task.Delay(1000, stoppingToken);
-        }
-    }
-}

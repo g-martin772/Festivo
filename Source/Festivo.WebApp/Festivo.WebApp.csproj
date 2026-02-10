@@ -14,4 +14,8 @@
         <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Festivo.TicketService.Client\Festivo.TicketService.Client.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -40,6 +40,16 @@ public static class Extensions
         // {
         //     options.AllowedSchemes = ["https"];
         // });
+        
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policyBuilder =>
+            {
+                policyBuilder.AllowAnyOrigin();
+                policyBuilder.AllowAnyMethod();
+                policyBuilder.AllowAnyHeader();
+            });
+        });
 
         return builder;
     }
@@ -124,6 +134,8 @@ public static class Extensions
                 Predicate = r => r.Tags.Contains("live")
             });
         }
+        
+        app.UseCors();
 
         return app;
     }

@@ -1,12 +1,67 @@
 @page "/Tickets"
-<h3>Tickets</h3>
+@using Festivo.TicketService.Client.Models
+@inject TicketClient TicketClient
+
+<EditForm Model="@m_Model" OnValidSubmit="Submit">
+    <DataAnnotationsValidator/>
+    <FluentValidationSummary/>
+
+    <FluentStack Orientation="Orientation.Vertical">
+        <div>
+            <FluentTextField Name="TicketType" @bind-Value="m_Model.TicketType" Label="Ticket Type" Required/>
+            <FluentValidationMessage For="@(() => m_Model.TicketType)"/>
+        </div>
+        <div>
+            <FluentTextField Name="TicketTarget" @bind-Value="m_Model.TicketTarget" Label="Ticket Target" Required/>
+            <FluentValidationMessage For="@(() => m_Model.TicketTarget)"/>
+        </div>
+        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
+    </FluentStack>
+</EditForm>
+
+<FluentSpacer/>
+
+<FluentLabel>@m_Output</FluentLabel>
 
 @code {
-    [CascadingParameter]
-    public MainLayout? Layout { get; set; } 
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+
+    private Model m_Model = new Model
+    {
+        TicketType = "basic",
+        TicketTarget = "concert1"
+    };
+
+    private string m_Output = "";
 
     protected override void OnInitialized()
     {
         Layout?.Title = "Tickets";
+    }
+
+    public record Model
+    {
+        public required string TicketType { get; set; }
+        public required string TicketTarget { get; set; }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            var response = await TicketClient.PurchaseTicketAsync(new PurchaseTicketRequest()
+            {
+                TicketType = m_Model.TicketType,
+                TicketTarget = m_Model.TicketTarget,
+                CustomerId = Guid.Parse("00000000-0000-0000-0000-000000000001")
+            });
+
+            m_Output = $"You paid {response.Price} for your ticket. ({response.Code})";
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            m_Output = $"Failed to purchase ticket: {e.Message}";
+        }
     }
 }

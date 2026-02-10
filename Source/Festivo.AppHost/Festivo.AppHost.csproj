@@ -20,6 +20,7 @@
         <ProjectReference Include="..\Festivo.WebApp\Festivo.WebApp.csproj"/>
         <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
         <PackageReference Include="Aspire.Hosting.PostgreSQL"/>
+        <PackageReference Include="Aspire.Hosting.Redis"/>
     </ItemGroup>
 
 </Project>

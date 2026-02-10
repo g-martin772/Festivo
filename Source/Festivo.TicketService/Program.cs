@@ -1,5 +1,12 @@
 using Festivo.Shared.Events;
 using Festivo.Shared.Services;
+using Festivo.TicketService.Client.Models;
+using Festivo.TicketService.Data;
+using Festivo.TicketService.Data.Entities;
+using Festivo.TicketService.Endpoints;
+using Festivo.TicketService.Services;
+using Microsoft.AspNetCore.Mvc;
+using TicketType = Festivo.TicketService.Client.Models.TicketType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +20,8 @@ builder.Services.AddMessaging([
     ("test", "#")
 ]);
 
-builder.Services.AddHostedService<Demo>();
+builder.AddNpgsqlDbContext<TicketDbContext>("TicketDb");
+builder.Services.AddHostedService<DbInitializer<TicketDbContext>>();
 
 var app = builder.Build();
 
@@ -29,35 +37,32 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapDefaultEndpoints();
-
-app.MapGet("/", () => "Hello World!");
+app.MapTicketEndpoints();
 
 app.Run();
 
-class Demo(EventBus eventBus, ILogger<Demo> logger) : BackgroundService
-{
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        await Task.Delay(2000, stoppingToken);
+/*
 
-        await eventBus.AddConsumerAsync<EntryRequestedEvent>("test", (@event, body, args, ct) =>
-        {
-            logger.LogInformation("Entry Requested Event Received: {@Content}", body.CustomerId);
-            return Task.CompletedTask;
-        }, stoppingToken);
+   Functional workflow (minimum)
 
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            await eventBus.PublishMessageAsync(new EntryRequestedEvent
-            {
-                CustomerId = "asd",
-                GateId = "asd",
-                TicketId = "asd",
-                RequestTime = DateTime.Now,
-                TicketCode = "asd"
-            }, stoppingToken);
-            
-            await Task.Delay(1000, stoppingToken);
-        }
-    }
-}
+       Purchase ticket in Ticket Service
+       Ticket Service publishes TicketPurchased
+       Access Control consumes TicketPurchased and registers the ticket code
+       Entry scan triggers EntryRequested and results in EntryGranted or EntryDenied
+       Crowd Monitor consumes EntryGranted / ExitGranted and updates occupancy
+
+   Requirements
+
+       TicketService:
+           Must generate a ticket code (string) returned to client
+           Must store ticket state in memory for now (DB later)
+       AccessControlService:
+           Must reject unknown/invalid/refunded tickets
+           Must enforce “no double entry” (enter twice without exit → denied)
+           Must write scan decisions with a reason
+       CrowdMonitorService:
+           Must track occupancy per stage/area (choose a simple model)
+           Must publish OccupancyUpdated when occupancy changes
+       All inter-service updates must happen via RabbitMQ events (not direct calls)
+   */
+
