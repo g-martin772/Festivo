@@ -13,14 +13,8 @@ public partial class QueueWorker(
     ILogger<QueueWorker> logger,
     IServiceProvider sp) : BackgroundService
 {
-    private IServiceScope? m_Scope;
-    private AccessControlDbContext m_DbContext = null!;
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        m_Scope = sp.CreateScope();
-        // ReSharper disable once InconsistentlySynchronizedField
-        m_DbContext = m_Scope.ServiceProvider.GetRequiredService<AccessControlDbContext>();
 
         await eventBus.Initialization.Task;
 
@@ -28,56 +22,50 @@ public partial class QueueWorker(
         await eventBus.AddConsumerAsync<TicketRefundedEvent>("TickedRefunded", HandleTicketRefunded, stoppingToken);
     }
 
-    private Task HandleTicketPurchased(CloudEvent @event, TicketPurchasedEvent body, BasicDeliverEventArgs args,
+    private async Task HandleTicketPurchased(CloudEvent @event, TicketPurchasedEvent body, BasicDeliverEventArgs args,
         CancellationToken ct)
     {
         LogTickedPurchasedEventReceived(logger, body.TicketCode);
 
         try
         {
-            lock (m_DbContext)
+            using var scope = sp.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AccessControlDbContext>();
+            
+            dbContext.ValidTickets.Add(new Ticket
             {
-                m_DbContext.ChangeTracker.Clear();
-                m_DbContext.ValidTickets.Add(new Ticket
-                {
-                    Code = body.TicketCode, 
-                    Type = body.TicketType,
-                    State = State.Out,
-                    EventId = body.EventId,
-                });
-                m_DbContext.SaveChanges();
-            }
+                Code = body.TicketCode, 
+                Type = body.TicketType,
+                State = State.Out,
+                EventId = body.EventId,
+            });
+            
+            await dbContext.SaveChangesAsync(ct);
         }
         catch (DbUpdateException)
         {
             LogTicketCodeAlreadyExistsInTheDatabaseSkipping(logger, body.TicketCode);
         }
-
-        return Task.CompletedTask;
     }
 
-    private Task HandleTicketRefunded(CloudEvent @event, TicketRefundedEvent body, BasicDeliverEventArgs args,
+    private async Task HandleTicketRefunded(CloudEvent @event, TicketRefundedEvent body, BasicDeliverEventArgs args,
         CancellationToken ct)
     {
         LogTickedRefundedEventReceived(logger, body.TicketCode);
 
-        lock (m_DbContext)
+        using var scope = sp.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AccessControlDbContext>();
+
+        var entry = await dbContext.ValidTickets.FindAsync([body.TicketCode], cancellationToken: ct);
+
+        if (entry is null)
         {
-            m_DbContext.ChangeTracker.Clear();
-
-            var entry = m_DbContext.ValidTickets.Find(body.TicketCode);
-
-            if (entry is null)
-            {
-                LogTicketCodeDoesNotExistInTheDatabaseSkipping(logger, body.TicketCode);
-                return Task.CompletedTask;
-            }
-
-            m_DbContext.ValidTickets.Remove(entry);
-            m_DbContext.SaveChanges();
+            LogTicketCodeDoesNotExistInTheDatabaseSkipping(logger, body.TicketCode);
+            return;
         }
 
-        return Task.CompletedTask;
+        dbContext.ValidTickets.Remove(entry);
+        await dbContext.SaveChangesAsync(ct);
     }
 
     [LoggerMessage(LogLevel.Information, "Ticked Purchased Event Received: {Code}")]
